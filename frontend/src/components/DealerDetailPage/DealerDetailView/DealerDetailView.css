@@ -1,0 +1,76 @@
+.detail-view {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: flex;
+  font-family:
+    "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui,
+    sans-serif;
+  color: #f5f6f7;
+  background: #0d0e10;
+  animation: detail-in 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.detail-view--leaving {
+  animation: detail-out 0.45s cubic-bezier(0.4, 0, 1, 1) forwards;
+  pointer-events: none;
+}
+
+.detail-content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow-y: auto;
+  padding: 48px 56px;
+}
+
+.row-highlight {
+  position: absolute;
+  top: 0;
+  left: 56px;
+  right: 56px;
+  background-color: rgba(255, 255, 255, 0.05);
+  pointer-events: none;
+  transition:
+    transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+    height 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 0.2s ease;
+}
+
+.detail-status {
+  margin: 0;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+@keyframes detail-in {
+  from {
+    opacity: 0;
+    transform: scale(1.02);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes detail-out {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(1.04);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .detail-view,
+  .detail-view--leaving {
+    animation: none;
+  }
+}

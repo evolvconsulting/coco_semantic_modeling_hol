@@ -1,0 +1,62 @@
+.delta-indicator {
+  display: inline-flex;
+  align-items: center;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.delta-indicator--sm {
+  gap: 7px;
+  font-size: 11px;
+}
+
+.delta-indicator--lg {
+  gap: 5px;
+  font-size: 13px;
+}
+
+.delta-indicator-icon {
+  display: block;
+  flex-shrink: 0;
+}
+
+.delta-indicator--sm .delta-indicator-icon {
+  font-size: 10px;
+}
+
+.delta-indicator--lg .delta-indicator-icon {
+  font-size: 12px;
+}
+
+.delta-indicator--down .delta-indicator-icon {
+  animation: delta-ripple-down 1.6s ease-in-out infinite;
+}
+
+.delta-indicator--up .delta-indicator-icon {
+  animation: delta-ripple-up 1.6s ease-in-out infinite;
+}
+
+.delta-indicator-text {
+  animation: delta-text-pulse 1.6s ease-in-out infinite;
+}
+
+.delta-indicator.is-good {
+  color: #34d399;
+}
+
+.delta-indicator.is-bad {
+  color: #f87171;
+}
+
+.delta-indicator--flat {
+  color: rgba(255, 255, 255, 0.35);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .delta-indicator-icon,
+  .delta-indicator-text {
+    animation: none;
+  }
+}

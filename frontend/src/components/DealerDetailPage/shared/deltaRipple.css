@@ -1,0 +1,33 @@
+@keyframes delta-ripple-down {
+  0%,
+  100% {
+    opacity: 0.4;
+    transform: translateY(-2px);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(3px);
+  }
+}
+
+@keyframes delta-ripple-up {
+  0%,
+  100% {
+    opacity: 0.4;
+    transform: translateY(2px);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-3px);
+  }
+}
+
+@keyframes delta-text-pulse {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 1;
+  }
+}

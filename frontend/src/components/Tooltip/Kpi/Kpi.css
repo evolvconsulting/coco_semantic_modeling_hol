@@ -1,0 +1,143 @@
+.tooltip-kpi {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.tooltip-kpi:first-child {
+  padding-top: 0;
+}
+
+.tooltip-kpi:last-child {
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.tooltip-kpi-readout {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 7px;
+}
+
+.tooltip-kpi-rule {
+  display: none;
+}
+
+.tooltip-kpi-value {
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+  font-size: 15px;
+  letter-spacing: -0.01em;
+  color: #ffffff;
+}
+
+.tooltip-kpi-trend {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  opacity: 0;
+  animation: trend-in 0.4s ease 0.55s forwards;
+}
+
+.tooltip-kpi-trend.is-good {
+  color: #34d399;
+}
+
+.tooltip-kpi-trend.is-bad {
+  color: #f87171;
+}
+
+.tooltip-kpi-trend-flat {
+  color: #5a6b78;
+}
+
+.tooltip-kpi-label {
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  color: rgba(255, 255, 255, 0.5);
+  white-space: nowrap;
+}
+
+@keyframes rule-grow {
+  to {
+    width: 22px;
+  }
+}
+
+@keyframes trend-in {
+  from {
+    opacity: 0;
+    transform: translateY(2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tooltip-kpi-rule {
+    animation: none;
+    width: 22px;
+  }
+  .tooltip-kpi-trend {
+    animation: none;
+    opacity: 1;
+  }
+}
+
+.reels {
+  display: inline-flex;
+  align-items: baseline;
+  line-height: 1;
+}
+
+.reel-static {
+  display: inline-block;
+}
+
+.reel {
+  display: inline-block;
+  height: 1em;
+  overflow: hidden;
+  vertical-align: baseline;
+}
+
+.reel-strip {
+  display: flex;
+  flex-direction: column;
+  transform: translateY(var(--reel-start, -10em));
+  animation: reel-land 0.7s cubic-bezier(0.16, 1, 0.3, 1) var(--reel-delay, 0s)
+    forwards;
+}
+
+.reel-cell {
+  display: block;
+  height: 1em;
+  text-align: center;
+}
+
+@keyframes reel-land {
+  0% {
+    transform: translateY(calc(var(--reel-target) - 10em));
+  }
+  80% {
+    transform: translateY(calc(var(--reel-target) + 0.12em));
+  }
+  100% {
+    transform: translateY(var(--reel-target));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reel-strip {
+    animation: none;
+    transform: translateY(var(--reel-target));
+  }
+}

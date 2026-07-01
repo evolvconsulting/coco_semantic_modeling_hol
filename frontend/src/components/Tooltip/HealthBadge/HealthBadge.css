@@ -1,0 +1,63 @@
+.health-badge {
+  display: flex;
+  align-items: center;
+}
+
+.health-badge-dot {
+  border-radius: 50%;
+  background: var(--health-accent, #ffffff);
+  box-shadow:
+    0 0 0 0 var(--health-accent, transparent),
+    0 0 8px 1px var(--health-accent, transparent);
+  animation: badge-pulse 2.4s ease-in-out infinite;
+}
+
+.health-badge-label {
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  color: var(--health-accent, #ffffff);
+}
+
+.health-badge--sm {
+  gap: 7px;
+}
+
+.health-badge--sm .health-badge-dot {
+  width: 7px;
+  height: 7px;
+}
+
+.health-badge--sm .health-badge-label {
+  font-size: 10.5px;
+}
+
+.health-badge--lg {
+  gap: 10px;
+}
+
+.health-badge--lg .health-badge-dot {
+  width: 10px;
+  height: 10px;
+}
+
+.health-badge--lg .health-badge-label {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+@keyframes badge-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 6px 0 var(--health-accent, transparent);
+  }
+  50% {
+    box-shadow: 0 0 10px 2px var(--health-accent, transparent);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .health-badge-dot {
+    animation: none;
+  }
+}

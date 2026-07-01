@@ -1,0 +1,9 @@
+pub const DEALERS_WITH_PERFORMANCE: &str = include_str!("sql/dealers_with_performance.sql");
+pub const DEALER_EXCEPTIONS: &str = include_str!("sql/dealer_exceptions.sql");
+pub const DEALER_EXCEPTIONS_PEER: &str = include_str!("sql/dealer_exceptions_peer.sql");
+pub const DEALER_CREDIT_MIX: &str = include_str!("sql/dealer_credit_mix.sql");
+pub const DEALER_CREDIT_MIX_PEER: &str = include_str!("sql/dealer_credit_mix_peer.sql");
+pub const DEALER_FUNDING: &str = include_str!("sql/dealer_funding.sql");
+pub const DEALER_FUNDING_PEER: &str = include_str!("sql/dealer_funding_peer.sql");
+pub const DEALER_SERVICING: &str = include_str!("sql/dealer_servicing.sql");
+pub const DEALER_SERVICING_PEER: &str = include_str!("sql/dealer_servicing_peer.sql");
