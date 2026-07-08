@@ -1,0 +1,17 @@
+"DEALER_ID","DEALER_NAME","TIER","TERRITORY","RM_NAME","LATITUDE","LONGITUDE"
+"D1001","AutoNation USA Plano","1","North DFW","Eliza Cohen",33.0129,-96.7712
+"D1006","Huffines Chevrolet Plano","2","North DFW","Eliza Cohen",33.0132,-96.7674
+"D1013","Kian Motors","3","North DFW","Eliza Cohen",33.0148,-96.769
+"D1002","AutoNation Ford Frisco","1","North DFW","Eliza Cohen",33.0916,-96.8275
+"D1007","Stonebriar Chevrolet","2","North DFW","Eliza Cohen",33.1035,-96.7958
+"D1008","Crest Nissan of Frisco","2","North DFW","Eliza Cohen",33.0911,-96.8297
+"D1009","Honda Cars of McKinney","2","North DFW","Eliza Cohen",33.1928,-96.6376
+"D1014","Auto Gallery of McKinney","3","North DFW","Eliza Cohen",33.2035,-96.6398
+"D4471","Brody's Toyota of Celina","1","North DFW","Eliza Cohen",33.3201,-96.7912
+"D1003","Toyota of Irving","1","Mid-West DFW","Eliza Cohen",32.8382,-96.9705
+"D1010","Clay Cooley Chevrolet Irving","2","Mid-West DFW","Eliza Cohen",32.8385,-96.932
+"D1015","Autos of Dallas","3","Mid-West DFW","Eliza Cohen",32.8384,-96.9579
+"D1004","Family Toyota of Arlington","1","South-West DFW","Eliza Cohen",32.7608,-97.0859
+"D1005","Vandergriff Chevrolet","1","South-West DFW","Eliza Cohen",32.6751,-97.1263
+"D1011","AutoNation Ford Fort Worth","2","South-West DFW","Eliza Cohen",32.677,-97.4176
+"D1012","Fort Worth Nissan","2","South-West DFW","Eliza Cohen",32.721,-97.4783
