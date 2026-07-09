@@ -93,24 +93,15 @@ END;
 $$;
 
 -- ============================================================
--- SECTION 3: Git Repository Access (Dealer 360 seed data)
+-- SECTION 3: Template Database — COCO_SDLC_HOL_DEALER_MASTER
 -- ============================================================
-CREATE OR REPLACE API INTEGRATION HOL_GIT_API_INTEGRATION
-    API_PROVIDER = git_https_api
-    API_ALLOWED_PREFIXES = ('https://github.com/evolvconsulting/c1_lab')
-    ENABLED = TRUE;
-
+-- Created directly as ATTENDEE_ROLE (which already has CREATE DATABASE ON
+-- ACCOUNT from Section 1) so it owns the database/schema from the start —
+-- no separate grant-back step needed, and every object below has an
+-- explicit, owned home that never relies on whatever DB/schema happens to
+-- be selected in the worksheet running this script.
 USE ROLE ATTENDEE_ROLE;
 
-CREATE OR REPLACE GIT REPOSITORY HOL_GIT_REPO
-    API_INTEGRATION = HOL_GIT_API_INTEGRATION
-    ORIGIN = 'https://github.com/evolvconsulting/c1_lab.git';
-
-ALTER GIT REPOSITORY HOL_GIT_REPO FETCH;
-
--- ============================================================
--- SECTION 4: Template Database — COCO_SDLC_HOL_DEALER_MASTER
--- ============================================================
 CREATE DATABASE IF NOT EXISTS COCO_SDLC_HOL_DEALER_MASTER
     COMMENT = 'Dealer 360 HOL lab template — hydrated from git seed data, cloned per attendee';
 
@@ -118,6 +109,30 @@ USE DATABASE COCO_SDLC_HOL_DEALER_MASTER;
 CREATE SCHEMA IF NOT EXISTS CORE;
 USE SCHEMA CORE;
 
+-- ============================================================
+-- SECTION 3b: Git Repository Access (Dealer 360 seed data)
+-- ============================================================
+USE ROLE ACCOUNTADMIN;
+
+CREATE OR REPLACE API INTEGRATION HOL_GIT_API_INTEGRATION
+    API_PROVIDER = git_https_api
+    API_ALLOWED_PREFIXES = ('https://github.com/evolvconsulting')
+    ENABLED = TRUE;
+
+USE ROLE ATTENDEE_ROLE;
+USE DATABASE COCO_SDLC_HOL_DEALER_MASTER;
+USE SCHEMA CORE;
+
+-- Fully qualified so this never depends on worksheet session context
+CREATE OR REPLACE GIT REPOSITORY COCO_SDLC_HOL_DEALER_MASTER.CORE.HOL_GIT_REPO
+    API_INTEGRATION = HOL_GIT_API_INTEGRATION
+    ORIGIN = 'https://github.com/evolvconsulting/c1_lab.git';
+
+ALTER GIT REPOSITORY COCO_SDLC_HOL_DEALER_MASTER.CORE.HOL_GIT_REPO FETCH;
+
+-- ============================================================
+-- SECTION 4: Template Tables
+-- ============================================================
 -- Table order respects FK dependencies: DEALER_MASTER first, then its dependents
 CREATE OR REPLACE TABLE DEALER_MASTER (
     DEALER_ID    VARCHAR(16777216) NOT NULL COMMENT 'Unique dealer identifier. Primary key.',
@@ -189,30 +204,27 @@ COMMENT = 'Payment/servicing events for funded loans. One row per payment period
 -- Load order matches FK dependency order above
 -- ============================================================
 COPY INTO DEALER_MASTER
-    FROM @HOL_GIT_REPO/branches/main/dealer_360_seed_data/dealer_master.csv
+    FROM @COCO_SDLC_HOL_DEALER_MASTER.CORE.HOL_GIT_REPO/branches/main/dealer_360_seed_data/dealer_master.csv
     FILE_FORMAT = (TYPE = CSV SKIP_HEADER = 1 FIELD_OPTIONALLY_ENCLOSED_BY = '"');
 
 COPY INTO APPLICATION_EVENTS
-    FROM @HOL_GIT_REPO/branches/main/dealer_360_seed_data/application_events.csv
+    FROM @COCO_SDLC_HOL_DEALER_MASTER.CORE.HOL_GIT_REPO/branches/main/dealer_360_seed_data/application_events.csv
     FILE_FORMAT = (TYPE = CSV SKIP_HEADER = 1 FIELD_OPTIONALLY_ENCLOSED_BY = '"');
 
 COPY INTO DEALER_PERFORMANCE
-    FROM @HOL_GIT_REPO/branches/main/dealer_360_seed_data/dealer_performance.csv
+    FROM @COCO_SDLC_HOL_DEALER_MASTER.CORE.HOL_GIT_REPO/branches/main/dealer_360_seed_data/dealer_performance.csv
     FILE_FORMAT = (TYPE = CSV SKIP_HEADER = 1 FIELD_OPTIONALLY_ENCLOSED_BY = '"');
 
 COPY INTO FUNDING_EVENTS
-    FROM @HOL_GIT_REPO/branches/main/dealer_360_seed_data/funding_events.csv
+    FROM @COCO_SDLC_HOL_DEALER_MASTER.CORE.HOL_GIT_REPO/branches/main/dealer_360_seed_data/funding_events.csv
     FILE_FORMAT = (TYPE = CSV SKIP_HEADER = 1 FIELD_OPTIONALLY_ENCLOSED_BY = '"');
 
 COPY INTO SERVICING_EVENTS
-    FROM @HOL_GIT_REPO/branches/main/dealer_360_seed_data/servicing_events.csv
+    FROM @COCO_SDLC_HOL_DEALER_MASTER.CORE.HOL_GIT_REPO/branches/main/dealer_360_seed_data/servicing_events.csv
     FILE_FORMAT = (TYPE = CSV SKIP_HEADER = 1 FIELD_OPTIONALLY_ENCLOSED_BY = '"');
 
--- Template DB stays owned/managed by ATTENDEE_ROLE (instructor-only, never handed out)
-USE ROLE ACCOUNTADMIN;
-GRANT ALL PRIVILEGES ON DATABASE COCO_SDLC_HOL_DEALER_MASTER TO ROLE ATTENDEE_ROLE;
-GRANT ALL PRIVILEGES ON SCHEMA COCO_SDLC_HOL_DEALER_MASTER.CORE TO ROLE ATTENDEE_ROLE;
-USE ROLE ATTENDEE_ROLE;
+-- Template DB is owned by ATTENDEE_ROLE (created that way in Section 3) —
+-- instructor-only, never handed out to attendees.
 
 -- ============================================================
 -- SECTION 6: Clone template into per-attendee databases
