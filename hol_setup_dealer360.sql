@@ -1,48 +1,37 @@
--- ============================================================
 -- HOL Setup Script — Dealer 360 Hands-On Lab
 -- Run all sections sequentially in a Snowflake worksheet as ACCOUNTADMIN.
 -- Designed to run on a FRESH lab account — all objects created from scratch.
 --
--- Seed data source: https://github.com/evolvconsulting/c1_lab.git
+-- Seed data source: https://github.com/evolvconsulting/coco_semantic_modeling_hol.git
 --   Branch: main
---   Path:   dealer_360_seed_data/  (public repo, no credentials needed)
+--   Path:   dealer_360_seed_data/
 --
 -- ISOLATION MODEL:
---   ATTENDEE_ROLE   — shared base role, common privileges only (warehouse usage, etc.)
---   HOL_ROLE_<NN>   — one per attendee, grants ATTENDEE_ROLE + exclusive access
---                     to that attendee's own cloned database only.
+--   No shared attendee role. SYSADMIN owns the template database and all
+--   clones. HOL_ROLE_<NN> — one per attendee — is granted ONLY warehouse
+--   usage plus exclusive access to that attendee's own cloned database.
 --   Each HOL_USER_<NN>'s DEFAULT_ROLE is their own HOL_ROLE_<NN>, so they
 --   cannot see or access other attendees' databases.
 --
--- ATTENDEE CREDENTIALS (hand out before the lab):
+-- ATTENDEE CREDENTIALS:
 --   Username : HOL_USER_01 ... HOL_USER_<NN>
---   Password : <value of HOL_PASSWORD below>
---   Database : COCO_SDLC_HOL_DEALER_01 ... COCO_SDLC_HOL_DEALER_<NN>
---   Template : COCO_SDLC_HOL_DEALER_MASTER  (instructor only — never hand this out)
--- ============================================================
+--   Password : Snowflake123!
+--   Database : COCO_SDLC_HOL_DEALER_01 ... COCO_SDLC_HOL_DEALER_<NN>, each user gets one
+--   Template : COCO_SDLC_HOL_DEALER_MASTER The database we'll create zero copy clones of for our users
 
--- ============================================================
--- SECTION 0: Configuration
--- ============================================================
-SET NUM_USERS    = 25;
-SET HOL_PASSWORD = '<SET_HOL_PASSWORD>'; -- INSTRUCTOR: set before running
+-- SECTION 1: Configuration
+--
+-- NUM_USERS and HOL_PASSWORD are hardcoded independently in 4 places below
+-- (Snowflake scripting blocks can't read session SET variables directly).
+-- If you change either value, edit ALL of these lines:
+--   NUM_USERS:    24, 51, 199, 222
+--   HOL_PASSWORD: 52
 
--- ============================================================
--- SECTION 1: ACCOUNTADMIN Bootstrap
--- ============================================================
 USE ROLE ACCOUNTADMIN;
 
 ALTER ACCOUNT SET CORTEX_ENABLED_CROSS_REGION = 'AWS_US';
 
--- Shared base role: common privileges with no database-specific grants
-CREATE ROLE IF NOT EXISTS ATTENDEE_ROLE;
-GRANT ROLE ATTENDEE_ROLE TO ROLE SYSADMIN;
-
-GRANT CREATE DATABASE ON ACCOUNT TO ROLE ATTENDEE_ROLE;
-GRANT IMPORTED PRIVILEGES ON DATABASE SNOWFLAKE TO ROLE ATTENDEE_ROLE;
-GRANT CREATE INTEGRATION ON ACCOUNT TO ROLE ATTENDEE_ROLE;
-
-CREATE WAREHOUSE IF NOT EXISTS COMPUTE_WH
+CREATE WAREHOUSE IF NOT EXISTS HOL_DEALER360_WH
     WAREHOUSE_SIZE = XSMALL
     MIN_CLUSTER_COUNT = 1
     MAX_CLUSTER_COUNT = 4
@@ -51,34 +40,31 @@ CREATE WAREHOUSE IF NOT EXISTS COMPUTE_WH
     AUTO_RESUME = TRUE
     COMMENT = 'HOL warehouse for Dealer 360 lab — multi-cluster so concurrent attendee load auto-scales out instead of queueing';
 
-GRANT USAGE ON WAREHOUSE COMPUTE_WH TO ROLE ATTENDEE_ROLE;
-
--- ============================================================
 -- SECTION 2: Create per-attendee roles and users
--- ============================================================
+
 EXECUTE IMMEDIATE $$
 DECLARE
-    num_users  INTEGER DEFAULT 25;          -- keep in sync with SET NUM_USERS above
-    hol_pass   VARCHAR DEFAULT '<SET_HOL_PASSWORD>'; -- keep in sync with SET HOL_PASSWORD above
+    num_users  INTEGER DEFAULT 25;
+    hol_pass   VARCHAR DEFAULT 'Snowflake123!';
 BEGIN
     FOR i IN 1 TO :num_users DO
         LET suffix    VARCHAR := LPAD(i::VARCHAR, 2, '0');
         LET username  VARCHAR := 'HOL_USER_' || :suffix;
         LET role_name VARCHAR := 'HOL_ROLE_' || :suffix;
 
-        -- Per-attendee role, inherits the shared base role
+        -- Per-attendee role. No shared base role — grants happen individually.
         EXECUTE IMMEDIATE
             'CREATE ROLE IF NOT EXISTS ' || :role_name;
         EXECUTE IMMEDIATE
-            'GRANT ROLE ATTENDEE_ROLE TO ROLE ' || :role_name;
-        EXECUTE IMMEDIATE
             'GRANT ROLE ' || :role_name || ' TO ROLE SYSADMIN';
+        EXECUTE IMMEDIATE
+            'GRANT USAGE ON WAREHOUSE HOL_DEALER360_WH TO ROLE ' || :role_name;
 
         EXECUTE IMMEDIATE
             'CREATE USER IF NOT EXISTS ' || :username ||
             ' PASSWORD = ''' || :hol_pass || '''' ||
             ' DEFAULT_ROLE = ' || :role_name ||
-            ' DEFAULT_WAREHOUSE = COMPUTE_WH' ||
+            ' DEFAULT_WAREHOUSE = HOL_DEALER360_WH' ||
             ' MUST_CHANGE_PASSWORD = FALSE' ||
             ' COMMENT = ''HOL attendee user''';
 
@@ -92,15 +78,10 @@ BEGIN
 END;
 $$;
 
--- ============================================================
--- SECTION 3: Template Database — COCO_SDLC_HOL_DEALER_MASTER
--- ============================================================
--- Created directly as ATTENDEE_ROLE (which already has CREATE DATABASE ON
--- ACCOUNT from Section 1) so it owns the database/schema from the start —
--- no separate grant-back step needed, and every object below has an
--- explicit, owned home that never relies on whatever DB/schema happens to
--- be selected in the worksheet running this script.
-USE ROLE ATTENDEE_ROLE;
+-- SECTION 3: The Template Database, named COCO_SDLC_HOL_DEALER_MASTER
+-- Owned by SYSADMIN — never granted to attendee roles.
+
+USE ROLE SYSADMIN;
 
 CREATE DATABASE IF NOT EXISTS COCO_SDLC_HOL_DEALER_MASTER
     COMMENT = 'Dealer 360 HOL lab template — hydrated from git seed data, cloned per attendee';
@@ -109,9 +90,8 @@ USE DATABASE COCO_SDLC_HOL_DEALER_MASTER;
 CREATE SCHEMA IF NOT EXISTS CORE;
 USE SCHEMA CORE;
 
--- ============================================================
--- SECTION 3b: Git Repository Access (Dealer 360 seed data)
--- ============================================================
+-- SECTION 3b: Git Repository Access for the Dealer 360 seed data
+
 USE ROLE ACCOUNTADMIN;
 
 CREATE OR REPLACE API INTEGRATION HOL_GIT_API_INTEGRATION
@@ -119,21 +99,22 @@ CREATE OR REPLACE API INTEGRATION HOL_GIT_API_INTEGRATION
     API_ALLOWED_PREFIXES = ('https://github.com/evolvconsulting')
     ENABLED = TRUE;
 
-USE ROLE ATTENDEE_ROLE;
+GRANT USAGE ON INTEGRATION HOL_GIT_API_INTEGRATION TO ROLE SYSADMIN;
+
+USE ROLE SYSADMIN;
 USE DATABASE COCO_SDLC_HOL_DEALER_MASTER;
 USE SCHEMA CORE;
 
--- Fully qualified so this never depends on worksheet session context
+-- Making this fully qualified so it never depends on the current worksheet session context
 CREATE OR REPLACE GIT REPOSITORY COCO_SDLC_HOL_DEALER_MASTER.CORE.HOL_GIT_REPO
     API_INTEGRATION = HOL_GIT_API_INTEGRATION
-    ORIGIN = 'https://github.com/evolvconsulting/c1_lab.git';
+    ORIGIN = 'https://github.com/evolvconsulting/coco_semantic_modeling_hol.git';
 
 ALTER GIT REPOSITORY COCO_SDLC_HOL_DEALER_MASTER.CORE.HOL_GIT_REPO FETCH;
 
--- ============================================================
 -- SECTION 4: Template Tables
--- ============================================================
 -- Table order respects FK dependencies: DEALER_MASTER first, then its dependents
+
 CREATE OR REPLACE TABLE DEALER_MASTER (
     DEALER_ID    VARCHAR(16777216) NOT NULL COMMENT 'Unique dealer identifier. Primary key.',
     DEALER_NAME  VARCHAR(16777216) COMMENT 'Dealership name as shown to customers, such as "AutoNation USA Plano".',
@@ -199,31 +180,36 @@ CREATE OR REPLACE TABLE SERVICING_EVENTS (
 )
 COMMENT = 'Payment/servicing events for funded loans. One row per payment period observed for a loan.';
 
--- ============================================================
 -- SECTION 5: Load seed data from the git repository stage
 -- Load order matches FK dependency order above
--- ============================================================
+
+CREATE OR REPLACE STAGE COCO_SDLC_HOL_DEALER_MASTER.CORE.HOL_SEED_STAGE
+    FILE_FORMAT = (TYPE = CSV SKIP_HEADER = 1 FIELD_OPTIONALLY_ENCLOSED_BY = '"');
+
+COPY FILES INTO @COCO_SDLC_HOL_DEALER_MASTER.CORE.HOL_SEED_STAGE
+    FROM @COCO_SDLC_HOL_DEALER_MASTER.CORE.HOL_GIT_REPO/branches/main/dealer_360_seed_data/;
+
 COPY INTO DEALER_MASTER
-    FROM @COCO_SDLC_HOL_DEALER_MASTER.CORE.HOL_GIT_REPO/branches/main/dealer_360_seed_data/dealer_master.csv
+    FROM @COCO_SDLC_HOL_DEALER_MASTER.CORE.HOL_SEED_STAGE/dealer_master.csv
     FILE_FORMAT = (TYPE = CSV SKIP_HEADER = 1 FIELD_OPTIONALLY_ENCLOSED_BY = '"');
 
 COPY INTO APPLICATION_EVENTS
-    FROM @COCO_SDLC_HOL_DEALER_MASTER.CORE.HOL_GIT_REPO/branches/main/dealer_360_seed_data/application_events.csv
+    FROM @COCO_SDLC_HOL_DEALER_MASTER.CORE.HOL_SEED_STAGE/application_events.csv
     FILE_FORMAT = (TYPE = CSV SKIP_HEADER = 1 FIELD_OPTIONALLY_ENCLOSED_BY = '"');
 
 COPY INTO DEALER_PERFORMANCE
-    FROM @COCO_SDLC_HOL_DEALER_MASTER.CORE.HOL_GIT_REPO/branches/main/dealer_360_seed_data/dealer_performance.csv
+    FROM @COCO_SDLC_HOL_DEALER_MASTER.CORE.HOL_SEED_STAGE/dealer_performance.csv
     FILE_FORMAT = (TYPE = CSV SKIP_HEADER = 1 FIELD_OPTIONALLY_ENCLOSED_BY = '"');
 
 COPY INTO FUNDING_EVENTS
-    FROM @COCO_SDLC_HOL_DEALER_MASTER.CORE.HOL_GIT_REPO/branches/main/dealer_360_seed_data/funding_events.csv
+    FROM @COCO_SDLC_HOL_DEALER_MASTER.CORE.HOL_SEED_STAGE/funding_events.csv
     FILE_FORMAT = (TYPE = CSV SKIP_HEADER = 1 FIELD_OPTIONALLY_ENCLOSED_BY = '"');
 
 COPY INTO SERVICING_EVENTS
-    FROM @COCO_SDLC_HOL_DEALER_MASTER.CORE.HOL_GIT_REPO/branches/main/dealer_360_seed_data/servicing_events.csv
+    FROM @COCO_SDLC_HOL_DEALER_MASTER.CORE.HOL_SEED_STAGE/servicing_events.csv
     FILE_FORMAT = (TYPE = CSV SKIP_HEADER = 1 FIELD_OPTIONALLY_ENCLOSED_BY = '"');
 
--- Template DB is owned by ATTENDEE_ROLE (created that way in Section 3) —
+-- Template DB is owned by SYSADMIN (created that way in Section 3) —
 -- instructor-only, never handed out to attendees.
 
 -- ============================================================
@@ -231,7 +217,7 @@ COPY INTO SERVICING_EVENTS
 -- ============================================================
 EXECUTE IMMEDIATE $$
 DECLARE
-    num_users INTEGER DEFAULT 25; -- keep in sync with SET NUM_USERS above
+    num_users INTEGER DEFAULT 25;
 BEGIN
     FOR i IN 1 TO :num_users DO
         LET suffix   VARCHAR := LPAD(i::VARCHAR, 2, '0');
@@ -248,13 +234,14 @@ $$;
 -- ============================================================
 -- SECTION 7: Grant each attendee's own database to their own role ONLY
 -- (This is what enforces isolation — HOL_ROLE_<NN> is only granted
---  access to COCO_SDLC_HOL_DEALER_<NN>, never to another attendee's DB.)
+--  access to COCO_SDLC_HOL_DEALER_<NN>, never to another attendee's DB.
+--  Clones are owned by SYSADMIN, so no shared role's ownership can leak
+--  access across attendees.)
 -- ============================================================
-USE ROLE ACCOUNTADMIN;
 
 EXECUTE IMMEDIATE $$
 DECLARE
-    num_users INTEGER DEFAULT 25; -- keep in sync with SET NUM_USERS above
+    num_users INTEGER DEFAULT 25;
 BEGIN
     FOR i IN 1 TO :num_users DO
         LET suffix    VARCHAR := LPAD(i::VARCHAR, 2, '0');
