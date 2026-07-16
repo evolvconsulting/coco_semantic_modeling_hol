@@ -13,7 +13,7 @@
   color: #ffffff;
   cursor: pointer;
   border-radius: 8px;
-  border: 1px solid #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.6);
   background: transparent;
   transition:
     color 0.5s,
@@ -36,7 +36,8 @@
 }
 
 .back-button:hover {
-  color: #001726;
+  color: #004977;
+  border-color: #ffffff;
   transform: scale(1.05);
 }
 

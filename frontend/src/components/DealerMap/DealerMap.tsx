@@ -4,8 +4,19 @@ import { MapContext } from "../MapContext/MapContext";
 
 const DFW_CENTER: [number, number] = [-97.0, 32.9];
 const DFW_ZOOM = 9;
-const STYLE_URL =
-  "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json";
+const STYLE_URL = "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json";
+
+const CAPITAL_ONE_BLUE = "#004977";
+const CAPITAL_ONE_BLUE_LIGHT = "#8fb7d1";
+
+function applyBrandWaterColors(instance: MapLibreMap) {
+  if (instance.getLayer("water")) {
+    instance.setPaintProperty("water", "fill-color", CAPITAL_ONE_BLUE_LIGHT);
+  }
+  if (instance.getLayer("waterway")) {
+    instance.setPaintProperty("waterway", "line-color", CAPITAL_ONE_BLUE);
+  }
+}
 
 interface DealerMapProps {
   children: ReactNode;
@@ -26,7 +37,10 @@ export function DealerMap({ children }: DealerMapProps) {
       attributionControl: { compact: true },
     });
 
-    instance.on("load", () => setMap(instance));
+    instance.on("load", () => {
+      applyBrandWaterColors(instance);
+      setMap(instance);
+    });
 
     return () => {
       instance.remove();
@@ -43,7 +57,7 @@ export function DealerMap({ children }: DealerMapProps) {
           inset: 0,
           pointerEvents: "none",
           background:
-            "radial-gradient(120% 90% at 50% 45%, transparent 55%, rgba(0, 12, 22, 0.55) 100%)",
+            "radial-gradient(120% 90% at 50% 45%, transparent 60%, rgba(0, 73, 119, 0.16) 100%)",
         }}
       />
       <MapContext.Provider value={map}>

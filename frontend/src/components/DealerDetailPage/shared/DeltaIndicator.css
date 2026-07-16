@@ -43,15 +43,15 @@
 }
 
 .delta-indicator.is-good {
-  color: #34d399;
+  color: #0e9f6e;
 }
 
 .delta-indicator.is-bad {
-  color: #f87171;
+  color: #d92d20;
 }
 
 .delta-indicator--flat {
-  color: rgba(255, 255, 255, 0.35);
+  color: rgba(15, 39, 51, 0.4);
 }
 
 @media (prefers-reduced-motion: reduce) {

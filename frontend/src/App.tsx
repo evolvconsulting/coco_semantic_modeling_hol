@@ -6,6 +6,7 @@ import { DealerDot } from "./components/DealerDot/DealerDot";
 import { GlassOverlay } from "./components/GlassOverlay/GlassOverlay";
 import { MapController } from "./components/MapController/MapController";
 import { DealerDetailView } from "./components/DealerDetailPage/DealerDetailView/DealerDetailView";
+import { DealerListDropdown } from "./components/DealerListDropdown/DealerListDropdown";
 import type { Dealer } from "./api";
 import type { Phase } from "./phase";
 
@@ -46,6 +47,9 @@ function App() {
         />
       ))}
       {phase === "map" && <GlassOverlay dealer={hovered} />}
+      {phase === "map" && (
+        <DealerListDropdown dealers={dealers} onSelect={select} />
+      )}
       <MapController
         selected={selected}
         phase={phase}

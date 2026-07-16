@@ -14,13 +14,13 @@
   width: 400px;
   padding: 22px 24px;
   border-radius: 4px;
-  background: rgba(13, 14, 16, 0.78);
+  background: rgba(255, 255, 255, 0.75);
   backdrop-filter: blur(10px) saturate(120%);
   -webkit-backdrop-filter: blur(10px) saturate(120%);
   box-shadow:
-    0 16px 40px -16px rgba(0, 0, 0, 0.85),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.06);
-  color: #f5f6f7;
+    0 16px 40px -16px rgba(15, 39, 51, 0.35),
+    inset 0 0 0 1px rgba(15, 39, 51, 0.08);
+  color: #0f2733;
   transform-origin: bottom center;
   animation: tooltip-in 0.24s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
@@ -33,7 +33,7 @@
   flex: 0 0 36%;
   min-width: 0;
   padding-right: 20px;
-  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  border-right: 1px solid rgba(15, 39, 51, 0.1);
 }
 
 .tooltip-aside-top {
