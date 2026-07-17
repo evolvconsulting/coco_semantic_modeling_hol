@@ -48,7 +48,7 @@ export function DealerMap({ children }: DealerMapProps) {
   }, []);
 
   return (
-    <div style={{ position: "relative", height: "100vh", width: "100%" }}>
+    <div style={{ position: "relative", height: "100vh", flex: "1 1 auto", minWidth: 0 }}>
       <div ref={containerRef} style={{ height: "100%", width: "100%" }} />
       <div
         aria-hidden

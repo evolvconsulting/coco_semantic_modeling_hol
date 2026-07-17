@@ -6,7 +6,7 @@ import { DealerDot } from "./components/DealerDot/DealerDot";
 import { GlassOverlay } from "./components/GlassOverlay/GlassOverlay";
 import { MapController } from "./components/MapController/MapController";
 import { DealerDetailView } from "./components/DealerDetailPage/DealerDetailView/DealerDetailView";
-import { DealerListDropdown } from "./components/DealerListDropdown/DealerListDropdown";
+import { AppSidebar } from "./components/AppSidebar/AppSidebar";
 import type { Dealer } from "./api";
 import type { Phase } from "./phase";
 
@@ -37,33 +37,33 @@ function App() {
   if (error) return <p>{error}</p>;
 
   return (
-    <DealerMap>
-      {dealers.map((dealer) => (
-        <DealerDot
-          key={dealer.id}
-          dealer={dealer}
-          onSelect={select}
-          onHover={setHovered}
+    <div style={{ display: "flex", height: "100vh", width: "100%" }}>
+      <AppSidebar dealers={dealers} onSelectDealer={select} />
+      <DealerMap>
+        {dealers.map((dealer) => (
+          <DealerDot
+            key={dealer.id}
+            dealer={dealer}
+            onSelect={select}
+            onHover={setHovered}
+          />
+        ))}
+        {phase === "map" && <GlassOverlay dealer={hovered} />}
+        <MapController
+          selected={selected}
+          phase={phase}
+          onArrived={onArrived}
+          onReturned={onReturned}
         />
-      ))}
-      {phase === "map" && <GlassOverlay dealer={hovered} />}
-      {phase === "map" && (
-        <DealerListDropdown dealers={dealers} onSelect={select} />
-      )}
-      <MapController
-        selected={selected}
-        phase={phase}
-        onArrived={onArrived}
-        onReturned={onReturned}
-      />
-      {(phase === "detail" || phase === "zooming-out") && selected && (
-        <DealerDetailView
-          dealer={selected}
-          leaving={phase === "zooming-out"}
-          onBack={onBack}
-        />
-      )}
-    </DealerMap>
+        {(phase === "detail" || phase === "zooming-out") && selected && (
+          <DealerDetailView
+            dealer={selected}
+            leaving={phase === "zooming-out"}
+            onBack={onBack}
+          />
+        )}
+      </DealerMap>
+    </div>
   );
 }
 
