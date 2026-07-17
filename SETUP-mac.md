@@ -1,8 +1,3 @@
-## 0. Clone
-
-- [ ] `git clone https://github.com/evolvconsulting/c1_lab.git`
-- [ ] `cd c1_lab`
-
 ## 1. Check installed versions
 
 - [ ] `python3 --version` (need 3.10+)
