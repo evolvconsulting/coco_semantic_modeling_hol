@@ -16,6 +16,10 @@
 - [ ] `open /tmp/node-installer.pkg`
 - [ ] open new terminal, `node --version` / `npm --version`
 
+## 4. Install Cortex Code if it's missing
+
+- [] `curl -LsS https://ai.snowflake.com/static/cc-scripts/install.sh | sh `
+
 ## 4. Setup the backend with a venv
 
 - [ ] `cd backend`
