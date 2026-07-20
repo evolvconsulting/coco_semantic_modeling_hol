@@ -4,8 +4,9 @@ from dataclasses import dataclass
 
 @dataclass(frozen=True)
 class SnowflakeConfig:
-    host: str
-    pat: str
+    account: str
+    user: str
+    password: str
     warehouse: str
     role: str
     database: str
@@ -14,8 +15,9 @@ class SnowflakeConfig:
     @staticmethod
     def from_env() -> "SnowflakeConfig":
         return SnowflakeConfig(
-            host=_required("SNOWFLAKE_HOST"),
-            pat=_required("SNOWFLAKE_PAT"),
+            account=_required("SNOWFLAKE_ACCOUNT"),
+            user=_required("SNOWFLAKE_USER"),
+            password=_required("SNOWFLAKE_PASSWORD"),
             warehouse=_required("SNOWFLAKE_WAREHOUSE"),
             role=_required("SNOWFLAKE_ROLE"),
             database=_required("SNOWFLAKE_DATABASE"),

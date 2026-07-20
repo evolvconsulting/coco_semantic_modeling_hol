@@ -1,4 +1,4 @@
 flask
 flask-cors
-requests
+snowflake-connector-python
 python-dotenv
