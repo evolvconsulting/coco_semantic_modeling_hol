@@ -47,7 +47,7 @@ WHY EACH METRIC MOVED
 ---------------------
 Look-to-book (down 40.9% -> 27.9%):
   Fewer applications convert to funded contracts. The application pool shifted toward
-  Near-Prime and Subprime (Prime share -~12 pts; Subprime +~14 pts), so Capital One
+  Near-Prime and Subprime (Prime share -~12 pts; Subprime +~14 pts), so the lender
   declined a higher share. Application volume held steady; conversion did not.
 
 Funding velocity (up 2.21 -> 5.28 days):
