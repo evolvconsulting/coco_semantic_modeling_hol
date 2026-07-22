@@ -1,0 +1,112 @@
+CoCo first time install at the CLI
+
+Windows: Run `irm https://ai.snowflake.com/static/cc-scripts/install.ps1 | iex` from the powershell cli
+Mac: Run `curl -LsS https://ai.snowflake.com/static/cc-scripts/install.sh | sh` from the terminal
+
+Once CoCo is installed, you'll need to provide some details to correctly enable your session. 
+
+The first thing the setup wizard will ask for is your account name. Then it will ask for your login name.
+In this case, your login name and your user name are one in the same. After both the account name and the login name
+have been provided, it will ask you if you'd like to select a database, schema, and virtual warehouse. Enter the assigned 
+database, schema, and warehouse provided. After the basic details have been seeded, it will ask you how you'd like to authenticate. 
+Choose OAuth, which will then take you to a browser login. From there, enter your assigned user name and the given password. Then you should be all set! 
+
+The information you'll need to complete the above can be seen below.
+
+Lab Account Name: AOVNGED.EVOLV_LAB
+User Name: HOL_USER_XX (based on number of users, will be between 01 and 0N) 
+    Example: If there are 25 lab attendees, the users names will be HOL_USER_01 - HOL_USER_25
+Password: Snowflake123! shared between all users
+Warehouse: HOL_DEALER360_WH
+Database: COCO_SDLC_HOL_DEALER_XX (based on number of users, same naming conventions as the users)
+Schema: CORE
+
+After CoCo is installed and configured to the lab account, we'll need to talk through a few steps to make sure
+your machine is ready to go. 
+
+Step one will be checking the installed versions of the three core building blocks we'll need to run the front and backend of the lab. 
+CoCo can walk through these with you. 
+
+`python3 --version` (need 3.10+)
+`node --version` (need v18+)
+`npm --version`
+
+If Python isnt installed, we'll need to do that. CoCo can run the command below to get you sorted. There's a mac version and a windows version. 
+
+Mac: - [ ] `curl --proto '=https' --tlsv1.2 -sSf https://www.python.org/ftp/python/3.12.7/python-3.12.7-macos11.pkg -o /tmp/python-installer.pkg`
+Windows: `winget install --id Python.Python.3.12`
+
+Same with Node. if its not installed, CoCo can walk through the below commands with you to get you all set up. 
+
+Mac: `curl -o /tmp/node-installer.pkg https://nodejs.org/dist/v22.11.0/node-v22.11.0.pkg`
+Windows: `winget install --id OpenJS.NodeJS.LTS`
+
+After the install, you'll likely need to start a fresh cli session for them to take effect. It's fine to close CoCo and reopn it here.
+
+Once you've opened your new CLI session, ask CoCo to ensure they're available. Once they are, we're going to clone the git repo down. 
+
+Ask CoCo to clone the repo down to your machine via this url:
+
+https://github.com/evolvconsulting/coco_semantic_modeling_hol.git
+
+After it's cloned, we'll want to setup a virtual environment (a venv) for the labs code. 
+The requirements are in the backend directory, and CoCo can help you with the setup. Ask CoCo to run through the commands below.
+
+`cd backend`
+`python -m venv venv`
+`venv\Scripts\activate`
+`pip install -r requirements.txt`
+
+The above gets the backend ready to go, we'll also need to get the frontend ready. Ask CoCo to run through the commands below. 
+
+`cd frontend`
+`npm install`
+
+After both the backend and the front end are sorted, there is a shell script you can run to start things up. You'll notice there are two,
+there is one for mac and one for windows. 
+
+Mac: ./run.sh
+Windows: .\run.ps1
+
+Ask CoCo to run the correct script and provide you with the front end url. Navigate to the URL in your browswer and you're ready to rock! 
+
+Here's where the lab really begins. You've got the back and frontend running and you're working with CoCo. The Dealer 360 Dashboard looks good,
+but there's no semantic view and no agent that can answer questions for you. The next steps will be creating a semantic view and an agent via CoCo,
+then asking some questions about the data in front of us. 
+
+Some concepts to understand first. What even is a semantic view? A Snowflake Semantic View is a schema level database object where you store business concepts 
+directly in the database, defining business metrics and modeling business entities and their relationships. You do that to add business meaning to physical data 
+and provide consistent business definitions across enterprise applications. It's the core foundation of what a Cortex Agent needs to be able to asnwer questions about data correctly.
+
+It's the ground truth, and needs to be nailed down before anything else we do today. The actual creation of the view can be done with simple DDL, but understanding 
+how to craft that DDL (not the syntax, but its content) is where the rigor lies. If the semantic view is not accurate, you will not get accurate answers to the questions you may ask. 
+
+The SQL has five main sections. Tables, Relationships, Facts, Dimensions, and Metrics. It's vital the content of each is correct. 
+The Tables section defines the tables in your database the view points to. If table names are not intuitive, this is where you can alias them as something more business readable and provide 
+context into what the table contains. The Relatoinship section defines how the Tables we referrenced relate to each other. Facts are just that, columns that represent facts, where as Dimensions 
+represent used to group and filter. 
+
+So, how should we go about gathing the information we need to correctly build the sql to craft the semantic view? 
+We're going to look in a few places. The first are the tables themselves. We'll ask CoCo to go one table at a time and examine
+them for any comments that might exist on the tables and columns themselves. In our case, we do have comments on each column. We'll
+walk through each of these one table at a time via CoCo so we can understand the tables at play and the data they contain. 
+
+Column comments typically arent the full picture though. One of the many advantages to harness like CoCo is the ability to injest unstructured text information
+as context. You'll see there's a call transcript present in the directory. This represents a short conversation between a data owner and data 
+practitioner where the data practitioner is asking clarifying questions over the dealer data we've got access to. We'll feed that to CoCo along with the column 
+level context it already has to fill in the gaps left by the comments. 
+
+After both the columns have been reviewed and the call transcript has been injested and discussed, we can craft the semantic view creation 
+SQL. CoCo may have to search through some snowflake docs to get the proper syntax, which is just fine.
+
+CoCo can run the SQL and report back wheter it was successful or not. After the semantic view is in place, we can move to creating the agent needed
+to ask questions over the data. This will also be done with SQL, and is a good bit less complicated than creating the semantic view. 
+
+We'll create the agent with a single SQL command via CoCo, but there's one core concept to understand first. A Cortex Agent has no ability to query a semantic view itself.
+For that, it must be configured with a Cortex Analyst tool. Snowflake makes this easy to do via SQL, and you can define the tool directly in the DDL via the create agent from spec 
+command. Within the DDL, you'll name the agent, point it at the correct semantic view we just created, configure it with a named analyst tool, and configure it with the virtual warehouse assigned earlier. 
+CoCo can worry about the syntax, but it's vital to instruct CoCo to include both the analyst tool and the virtual warehouse. The agent can also be configured with example questions, feel free to add some or not.
+
+Once both the semantic view and the agent have been created, you can start asking questions over the data itself. CoCo can ask questions to the agent via the CLI,
+or you can go into snowsight and ask questions there. Either is fine. 
+
