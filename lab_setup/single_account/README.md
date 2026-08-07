@@ -26,8 +26,8 @@ second one adds a hardcoded-password account for no benefit. Objects here are
 owned by `SYSADMIN`, which any `ACCOUNTADMIN` inherits.
 
 **No `MASTER` database and no clones.** The shared script builds
-`COCO_SDLC_HOL_DEALER_MASTER` and zero-copy clones it to `_01`…`_NN`. Here
-there is one database, `COCO_SDLC_HOL_DEALER`, with no suffix. This also
+`HOL_DEALER360_MASTER` and zero-copy clones it to `_01`…`_NN`. Here
+there is one database, `HOL_DEALER360`, with no suffix. This also
 resolves the naming mismatch in the shared variant, where the semantic view and
 agent scripts point at `..._MASTER` while the attendee docs say `..._XX`.
 
@@ -64,7 +64,7 @@ Lab Account Name: <the attendee's own account identifier>
 User Name:        <the attendee's own login>
 Password:         <the attendee's own password>
 Warehouse:        HOL_DEALER360_WH
-Database:         COCO_SDLC_HOL_DEALER
+Database:         HOL_DEALER360
 Schema:           CORE
 ```
 
@@ -76,6 +76,6 @@ SNOWFLAKE_USER=<the attendee's own login>
 SNOWFLAKE_PASSWORD=<the attendee's own password>
 SNOWFLAKE_WAREHOUSE=HOL_DEALER360_WH
 SNOWFLAKE_ROLE=SYSADMIN
-SNOWFLAKE_DATABASE=COCO_SDLC_HOL_DEALER
+SNOWFLAKE_DATABASE=HOL_DEALER360
 SNOWFLAKE_SCHEMA=CORE
 ```

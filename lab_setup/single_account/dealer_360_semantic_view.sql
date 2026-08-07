@@ -3,25 +3,25 @@
 -- Attendees build this themselves during the lab; this is what a complete
 -- version looks like. Not run by hol_setup_dealer360.sql.
 
-CREATE OR REPLACE SEMANTIC VIEW COCO_SDLC_HOL_DEALER.CORE.DEALER_360_SEMANTIC_VIEW
+CREATE OR REPLACE SEMANTIC VIEW HOL_DEALER360.CORE.DEALER_360_SEMANTIC_VIEW
   TABLES (
-    DEALER_MASTER AS COCO_SDLC_HOL_DEALER.CORE.DEALER_MASTER
+    DEALER_MASTER AS HOL_DEALER360.CORE.DEALER_MASTER
       PRIMARY KEY (DEALER_ID)
       WITH SYNONYMS ('dealers', 'dealer master')
       COMMENT = 'One row per dealer; the anchor table every other table joins back to.',
-    APPLICATION_EVENTS AS COCO_SDLC_HOL_DEALER.CORE.APPLICATION_EVENTS
+    APPLICATION_EVENTS AS HOL_DEALER360.CORE.APPLICATION_EVENTS
       PRIMARY KEY (APPLICATION_ID)
       WITH SYNONYMS ('applications')
       COMMENT = 'Top of the funnel. One row per credit application submitted at a dealer.',
-    FUNDING_EVENTS AS COCO_SDLC_HOL_DEALER.CORE.FUNDING_EVENTS
+    FUNDING_EVENTS AS HOL_DEALER360.CORE.FUNDING_EVENTS
       PRIMARY KEY (CONTRACT_ID)
       WITH SYNONYMS ('contracts', 'funded deals')
       COMMENT = 'One row per booked contract (applications with DECISION = Booked that proceeded to contract).',
-    SERVICING_EVENTS AS COCO_SDLC_HOL_DEALER.CORE.SERVICING_EVENTS
+    SERVICING_EVENTS AS HOL_DEALER360.CORE.SERVICING_EVENTS
       PRIMARY KEY (LOAN_ID)
       WITH SYNONYMS ('loan servicing', 'payments')
       COMMENT = 'One row per payment/servicing observation for a funded loan.',
-    DEALER_PERFORMANCE AS COCO_SDLC_HOL_DEALER.CORE.DEALER_PERFORMANCE
+    DEALER_PERFORMANCE AS HOL_DEALER360.CORE.DEALER_PERFORMANCE
       PRIMARY KEY (DEALER_ID, PERIOD)
       WITH SYNONYMS ('dealer performance', 'monthly dealer rollup', 'dealer scorecard')
       COMMENT = 'Monthly, pre-aggregated performance rollup per dealer used to score dealers against their tier peer baseline.'
