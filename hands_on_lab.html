@@ -898,8 +898,9 @@
     <div class="content-grid">
       <div class="narrative">
         <p>Download <strong>Snowflake CoCo Desktop</strong> from the downloads page and install it. On <strong>macOS</strong>, open the .dmg and drag CoCo into Applications. On <strong>Windows</strong>, run the .exe and take the <strong>user install</strong>. The app updates itself from here on out.</p>
-        <p>On first launch a <strong>four-step wizard</strong> runs: welcome, connect, view, theme. The connect step asks for only three things &mdash; <strong>account identifier</strong>, <strong>username</strong>, and an <strong>authentication method</strong>. Choose <strong>Local OAuth</strong>; a browser opens where you enter your assigned username and the shared password. Pick <strong>Agent</strong> view and whichever theme you like.</p>
-        <p>The wizard never asks for a role, warehouse, database, or schema. Those are already your defaults on the lab account, so you can just start working &mdash; the values are listed here for the steps that need them by name.</p>
+        <p>On first launch a <strong>four-step wizard</strong> runs: welcome, connect, view, theme. The connect step asks for only three things &mdash; <strong>account identifier</strong>, <strong>username</strong>, and an <strong>authentication method</strong>. Choose <strong>Local OAuth</strong>; a browser opens where you enter the username and password issued with your account. Pick <strong>Agent</strong> view and whichever theme you like.</p>
+        <p>You have <strong>your own Snowflake account</strong> for this lab, so the account identifier is yours alone &mdash; take it from the credentials you were issued rather than the example shown here.</p>
+        <p>The wizard never asks for a role, warehouse, database, or schema, and it doesn't need to: all three are already set as defaults on your user. Connect and you're pointed at the lab data. They're listed here for the steps that name them, and for the <strong>.env</strong> file in step 03.</p>
       </div>
 
       <div class="terminal">
@@ -920,13 +921,14 @@
           <div class="terminal-line"><span class="prompt">4</span><span class="cmd">Choose theme</span></div>
 
           <div class="cred-table">
-            <div class="cred-row"><div class="label">Account Identifier</div><div class="value">AOVNGED.EVOLV_LAB</div></div>
-            <div class="cred-row"><div class="label">Username</div><div class="value">HOL_USER_XX</div></div>
+            <div class="cred-row"><div class="label">Account Identifier</div><div class="value">ORGNAME-ACCOUNT<small>your own &mdash; use the one you were issued</small></div></div>
+            <div class="cred-row"><div class="label">Username</div><div class="value">USER</div></div>
             <div class="cred-row"><div class="label">Auth Method</div><div class="value">Local OAuth &rarr; browser login</div></div>
-            <div class="cred-row"><div class="label">Password</div><div class="value">Snowflake123!<small>entered in the browser, not in CoCo</small></div></div>
-            <div class="cred-row"><div class="label">Warehouse</div><div class="value">HOL_DEALER360_WH<small>not asked by the wizard</small></div></div>
-            <div class="cred-row"><div class="label">Database</div><div class="value">HOL_DEALER360_XX<small>not asked by the wizard</small></div></div>
-            <div class="cred-row"><div class="label">Schema</div><div class="value">CORE<small>not asked by the wizard</small></div></div>
+            <div class="cred-row"><div class="label">Password</div><div class="value">as issued<small>entered in the browser, not in CoCo</small></div></div>
+            <div class="cred-row"><div class="label">Role</div><div class="value">HOL_PARTICIPANT<small>already your default</small></div></div>
+            <div class="cred-row"><div class="label">Warehouse</div><div class="value">HOL_DEALER360_WH<small>already your default</small></div></div>
+            <div class="cred-row"><div class="label">Database</div><div class="value">HOL_DEALER360<small>already your default</small></div></div>
+            <div class="cred-row"><div class="label">Schema</div><div class="value">CORE<small>already your default</small></div></div>
           </div>
         </div>
       </div>
@@ -942,7 +944,7 @@
 
     <div class="content-grid">
       <div class="narrative">
-        <p>Once CoCo Desktop is installed and connected to the lab account, we need to make sure your machine has the core building blocks ready for the front end and back end of the lab.</p>
+        <p>Once CoCo Desktop is installed and connected to your account, we need to make sure your machine has the core building blocks ready for the front end and back end of the lab.</p>
         <p>Just ask CoCo in <strong>chat</strong> to check the installed versions of <strong>Python</strong>, <strong>Node</strong>, and <strong>npm</strong> &mdash; it runs them in Desktop's built-in <strong>Terminal</strong> and reports back. You'll need <strong>Python 3.10+</strong> and <strong>Node v18+</strong>.</p>
       </div>
 
@@ -982,7 +984,7 @@
     <div class="content-grid">
       <div class="narrative">
         <p>Ask CoCo to clone the lab repo down via the provided url, then use <strong>Open Folder</strong> to point Desktop at the cloned directory &mdash; CoCo works against an open workspace, and the rest of the lab assumes it's this one. From there, have it set up a <strong>virtual environment</strong> for the backend via the listed commands and install the <strong>frontend</strong> dependencies.</p>
-        <p>Finally, ask CoCo to create your <strong>.env</strong> file. Give it the variable names the backend expects, seen to the right, along with your assigned values, and CoCo will write the file for you.</p>
+        <p>Finally, ask CoCo to create your <strong>.env</strong> file. Give it the variable names the backend expects, seen to the right, and CoCo will write the file for you. Only the first three lines are yours to fill in &mdash; the rest are the same for every attendee.</p>
       </div>
 
       <div class="terminal">
@@ -1017,12 +1019,12 @@
             <div class="env-file">
               <div class="env-file-tab"><div class="dot"></div>backend/.env</div>
               <div class="env-file-body">
-                <div class="env-line"><span class="key">SNOWFLAKE_ACCOUNT</span><span class="eq">=</span><span class="val">AOVNGED.EVOLV_LAB</span></div>
-                <div class="env-line"><span class="key">SNOWFLAKE_USER</span><span class="eq">=</span><span class="val">HOL_USER_XX</span></div>
-                <div class="env-line"><span class="key">SNOWFLAKE_PASSWORD</span><span class="eq">=</span><span class="val">Snowflake123!</span></div>
+                <div class="env-line"><span class="key">SNOWFLAKE_ACCOUNT</span><span class="eq">=</span><span class="val">ORGNAME-ACCOUNT</span></div>
+                <div class="env-line"><span class="key">SNOWFLAKE_USER</span><span class="eq">=</span><span class="val">USER</span></div>
+                <div class="env-line"><span class="key">SNOWFLAKE_PASSWORD</span><span class="eq">=</span><span class="val">as issued</span></div>
                 <div class="env-line"><span class="key">SNOWFLAKE_WAREHOUSE</span><span class="eq">=</span><span class="val">HOL_DEALER360_WH</span></div>
-                <div class="env-line"><span class="key">SNOWFLAKE_ROLE</span><span class="eq">=</span><span class="val">HOL_ROLE_XX</span></div>
-                <div class="env-line"><span class="key">SNOWFLAKE_DATABASE</span><span class="eq">=</span><span class="val">HOL_DEALER360_XX</span></div>
+                <div class="env-line"><span class="key">SNOWFLAKE_ROLE</span><span class="eq">=</span><span class="val">HOL_PARTICIPANT</span></div>
+                <div class="env-line"><span class="key">SNOWFLAKE_DATABASE</span><span class="eq">=</span><span class="val">HOL_DEALER360</span></div>
                 <div class="env-line"><span class="key">SNOWFLAKE_SCHEMA</span><span class="eq">=</span><span class="val">CORE</span></div>
               </div>
             </div>

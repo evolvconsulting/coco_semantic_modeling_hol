@@ -89,35 +89,25 @@ are enabled on whatever edition the attendee accounts are provisioned at.
 
 ## Attendee-facing docs
 
-`full_setup.txt` (in the parent directory) and `hands_on_lab.html` (at the repo
-root) still describe
-the shared-account model (`Lab Account Name: AOVNGED.EVOLV_LAB`, shared password
-`Snowflake123!`, `HOL_USER_XX`). For a single-account lab those credential
-blocks become:
+`hands_on_lab.html` (at the repo root) is **written for this variant**. It assumes
+CoCo Desktop, one account per attendee, and these credentials:
 
 ```
-Lab Account Name: <the participant's own account identifier>
-User Name:        USER  (provisioned by DataOps.live)
-Password:         <as issued with that user>
-Role:             HOL_PARTICIPANT
-Warehouse:        HOL_DEALER360_WH
-Database:         HOL_DEALER360
-Schema:           CORE
+Account Identifier: <the participant's own — shown as ORGNAME-ACCOUNT>
+Username:           USER  (provisioned by DataOps.live)
+Password:           <as issued with that user>
+Role:               HOL_PARTICIPANT
+Warehouse:          HOL_DEALER360_WH
+Database:           HOL_DEALER360
+Schema:             CORE
 ```
 
-If setup's bind block succeeded, role/warehouse/database are already the user's
-defaults, so the participant shouldn't need to set them by hand. List them anyway
-— CoCo Desktop's onboarding wizard doesn't ask for any of the three, and a
-participant who needs to correct them will look for them here.
+Role, warehouse, and database are listed even though setup's bind block already
+makes them the user's defaults. CoCo Desktop's onboarding wizard never asks for
+them, so a participant who needs to check or correct one will look for them here.
+The same values appear again in the guide's `backend/.env` block.
 
-And the corresponding `backend/.env`:
-
-```
-SNOWFLAKE_ACCOUNT=<the participant's own account identifier>
-SNOWFLAKE_USER=USER
-SNOWFLAKE_PASSWORD=<as issued with that user>
-SNOWFLAKE_WAREHOUSE=HOL_DEALER360_WH
-SNOWFLAKE_ROLE=HOL_PARTICIPANT
-SNOWFLAKE_DATABASE=HOL_DEALER360
-SNOWFLAKE_SCHEMA=CORE
-```
+`full_setup.txt` (in the parent directory) has **not** been updated — it still
+describes the shared-account model (`AOVNGED.EVOLV_LAB`, shared password
+`Snowflake123!`, `HOL_USER_XX`) and the CoCo CLI. It belongs to the shared
+variant; don't hand it to a single-account attendee.
