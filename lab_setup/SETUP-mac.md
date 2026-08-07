@@ -1,3 +1,9 @@
+> **One terminal, start to finish.** Every step below assumes you're at the repo
+> root (`coco_semantic_modeling_hol/`). Where a step moves you elsewhere, its last
+> box brings you back, so you can just work down the list. Steps 4 and 5 are the
+> exception — installing Python or Node needs a fresh terminal, so `cd` back to the
+> repo root when you reopen.
+
 ## 1. Clone
 
 - [ ] `git clone https://github.com/evolvconsulting/coco_semantic_modeling_hol.git`
@@ -35,10 +41,11 @@
 - [ ] `python3 -m venv venv`
 - [ ] `source venv/bin/activate`
 - [ ] `pip install -r requirements.txt`
+- [ ] `cd ..`
 
 ## 7. Configure `backend/.env`
 
-- [ ] `cd ..` (step 6 left you in `backend/`), then `cp backend/.env.example backend/.env`
+- [ ] `cp backend/.env.example backend/.env`
 - [ ] fill it in — the first three come from the credentials you were issued, the rest are the same for everyone:
 
 ```
@@ -53,12 +60,16 @@ SNOWFLAKE_SCHEMA=CORE
 
 - [ ] leave no blanks — the backend fails to connect if any value is empty
 
-## 8. Frontend setup (new terminal tab)
+## 8. Frontend setup
 
 - [ ] `cd frontend`
 - [ ] `npm install`
+- [ ] `cd ..`
 
 ## 9. Run
 
-- [ ] from repo root: `./run.sh` → starts backend + frontend, open printed `Local:` URL
+- [ ] `./run.sh` → starts backend + frontend, open printed `Local:` URL
 - [ ] Ctrl+C stops both
+
+`run.sh` activates the venv and starts both servers itself, so you don't need a
+second terminal and you don't need the venv active when you call it.
