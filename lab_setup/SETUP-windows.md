@@ -1,7 +1,7 @@
 ## 0. Clone
 
-- [ ] `git clone https://github.com/evolvconsulting/c1_lab.git`
-- [ ] `cd c1_lab`
+- [ ] `git clone https://github.com/evolvconsulting/coco_semantic_modeling_hol.git`
+- [ ] `cd coco_semantic_modeling_hol`
 
 ## 1. Check installed versions
 
