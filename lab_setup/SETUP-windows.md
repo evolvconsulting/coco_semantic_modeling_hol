@@ -35,12 +35,29 @@
 - [ ] `venv\Scripts\activate`
 - [ ] `pip install -r requirements.txt`
 
-## 7. Frontend setup (new PowerShell window)
+## 7. Configure `backend/.env`
+
+- [ ] `cd ..` (step 6 left you in `backend\`), then `copy backend\.env.example backend\.env`
+- [ ] fill it in — the first three come from the credentials you were issued, the rest are the same for everyone:
+
+```
+SNOWFLAKE_ACCOUNT=ORGNAME-ACCOUNT
+SNOWFLAKE_USER=USER
+SNOWFLAKE_PASSWORD=<as issued>
+SNOWFLAKE_WAREHOUSE=HOL_DEALER360_WH
+SNOWFLAKE_ROLE=HOL_PARTICIPANT
+SNOWFLAKE_DATABASE=HOL_DEALER360
+SNOWFLAKE_SCHEMA=CORE
+```
+
+- [ ] leave no blanks — the backend fails to connect if any value is empty
+
+## 8. Frontend setup (new PowerShell window)
 
 - [ ] `cd frontend`
 - [ ] `npm install`
 
-## 8. Run
+## 9. Run
 
 - [ ] from repo root: `.\run.ps1` → starts backend + frontend, open printed `Local:` URL
 - [ ] Ctrl+C stops both
