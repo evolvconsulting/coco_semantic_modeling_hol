@@ -29,7 +29,7 @@
     aspect-ratio: 11 / 8.5;
     margin: 40px auto;
     overflow: hidden;
-    background-image: url('../assets/nyc.jpg');
+    background-image: url('assets/nyc.jpg');
     background-size: cover;
     background-position: center;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
@@ -888,17 +888,18 @@
     </div>
   </div>
 
-  <div class="page" style="background-image: url('../assets/nyc4.jpg'); background-position: center 70%;">
+  <div class="page" style="background-image: url('assets/nyc4.jpg'); background-position: center 70%;">
     <div class="page-header">
       <div class="eyebrow">Step 01 &middot; Get Set Up</div>
-      <h1>Installing CoCo</h1>
+      <h1>Installing CoCo Desktop</h1>
     </div>
     <div class="page-number">01</div>
 
     <div class="content-grid">
       <div class="narrative">
-        <p>First, install <strong>CoCo</strong> at the command line. The setup wizard will ask for a few details to connect your session, starting with your <strong>account name</strong>, then your <strong>login name</strong>. In this lab, your login name and username will be the same.</p>
-        <p>Next you'll choose a <strong>database</strong>, <strong>schema</strong>, and <strong>virtual warehouse</strong>. Enter the values outlined to the right. When asked how to authenticate, choose <strong>OAuth</strong>. This'll open a browser login where you enter your assigned username and the shared password. Then you're in.</p>
+        <p>Download <strong>Snowflake CoCo Desktop</strong> from the downloads page and install it. On <strong>macOS</strong>, open the .dmg and drag CoCo into Applications. On <strong>Windows</strong>, run the .exe and take the <strong>user install</strong>. The app updates itself from here on out.</p>
+        <p>On first launch a <strong>four-step wizard</strong> runs: welcome, connect, view, theme. The connect step asks for only three things &mdash; <strong>account identifier</strong>, <strong>username</strong>, and an <strong>authentication method</strong>. Choose <strong>Local OAuth</strong>; a browser opens where you enter your assigned username and the shared password. Pick <strong>Agent</strong> view and whichever theme you like.</p>
+        <p>The wizard never asks for a role, warehouse, database, or schema. Those are already your defaults on the lab account, so you can just start working &mdash; the values are listed here for the steps that need them by name.</p>
       </div>
 
       <div class="terminal">
@@ -906,30 +907,33 @@
           <div class="terminal-dot red"></div>
           <div class="terminal-dot yellow"></div>
           <div class="terminal-dot green"></div>
-          <span>coco install</span>
+          <span>Snowflake CoCo Desktop</span>
         </div>
         <div class="terminal-body">
-          <div class="terminal-comment"># macOS</div>
-          <div class="terminal-line"><span class="prompt">$</span><span class="cmd">curl -LsS https://ai.snowflake.com/static/cc-scripts/install.sh | sh</span></div>
+          <div class="terminal-comment">Download</div>
+          <div class="terminal-line"><span class="prompt">&rarr;</span><span class="cmd">snowflake.com/en/product/snowflake-coco/downloads/</span></div>
 
-          <div class="terminal-comment"># Windows (PowerShell)</div>
-          <div class="terminal-line"><span class="prompt">&gt;</span><span class="cmd">irm https://ai.snowflake.com/static/cc-scripts/install.ps1 | iex</span></div>
+          <div class="terminal-comment">Onboarding wizard</div>
+          <div class="terminal-line"><span class="prompt">1</span><span class="cmd">Welcome</span></div>
+          <div class="terminal-line"><span class="prompt">2</span><span class="cmd">Connect &rarr; Add connection</span></div>
+          <div class="terminal-line"><span class="prompt">3</span><span class="cmd">Choose a view &rarr; Agent</span></div>
+          <div class="terminal-line"><span class="prompt">4</span><span class="cmd">Choose theme</span></div>
 
           <div class="cred-table">
-            <div class="cred-row"><div class="label">Account Name</div><div class="value">AOVNGED.EVOLV_LAB</div></div>
+            <div class="cred-row"><div class="label">Account Identifier</div><div class="value">AOVNGED.EVOLV_LAB</div></div>
             <div class="cred-row"><div class="label">Username</div><div class="value">HOL_USER_XX</div></div>
-            <div class="cred-row"><div class="label">Password</div><div class="value">Snowflake123!</div></div>
-            <div class="cred-row"><div class="label">Warehouse</div><div class="value">HOL_DEALER360_WH</div></div>
-            <div class="cred-row"><div class="label">Database</div><div class="value">HOL_DEALER360_XX</div></div>
-            <div class="cred-row"><div class="label">Schema</div><div class="value">CORE</div></div>
-            <div class="cred-row"><div class="label">Auth Method</div><div class="value">OAuth &rarr; browser login</div></div>
+            <div class="cred-row"><div class="label">Auth Method</div><div class="value">Local OAuth &rarr; browser login</div></div>
+            <div class="cred-row"><div class="label">Password</div><div class="value">Snowflake123!<small>entered in the browser, not in CoCo</small></div></div>
+            <div class="cred-row"><div class="label">Warehouse</div><div class="value">HOL_DEALER360_WH<small>not asked by the wizard</small></div></div>
+            <div class="cred-row"><div class="label">Database</div><div class="value">HOL_DEALER360_XX<small>not asked by the wizard</small></div></div>
+            <div class="cred-row"><div class="label">Schema</div><div class="value">CORE<small>not asked by the wizard</small></div></div>
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <div class="page page--top-shade" style="background-image: url('../assets/nyc5.jpg'); background-position: center 55%;">
+  <div class="page page--top-shade" style="background-image: url('assets/nyc5.jpg'); background-position: center 55%;">
     <div class="page-header">
       <div class="eyebrow">Step 02 &middot; Get Set Up</div>
       <h1>Checking Your Environment</h1>
@@ -938,8 +942,8 @@
 
     <div class="content-grid">
       <div class="narrative">
-        <p>Once CoCo is installed and connected to the lab account, we need to make sure your machine has the core building blocks ready for the front end and back end of the lab.</p>
-        <p>CoCo can check the installed versions of <strong>Python</strong>, <strong>Node</strong>, and <strong>npm</strong> for you right at the CLI. You'll need <strong>Python 3.10+</strong> and <strong>Node v18+</strong>.</p>
+        <p>Once CoCo Desktop is installed and connected to the lab account, we need to make sure your machine has the core building blocks ready for the front end and back end of the lab.</p>
+        <p>Just ask CoCo in <strong>chat</strong> to check the installed versions of <strong>Python</strong>, <strong>Node</strong>, and <strong>npm</strong> &mdash; it runs them in Desktop's built-in <strong>Terminal</strong> and reports back. You'll need <strong>Python 3.10+</strong> and <strong>Node v18+</strong>.</p>
       </div>
 
       <div class="terminal">
@@ -968,7 +972,7 @@
     </div>
   </div>
 
-  <div class="page page--bright" style="background-image: url('../assets/nyc7.jpg'); background-position: center 40%;">
+  <div class="page page--bright" style="background-image: url('assets/nyc7.jpg'); background-position: center 40%;">
     <div class="page-header">
       <div class="eyebrow">Step 03 &middot; Get Set Up</div>
       <h1>Clone, Build, Configure</h1>
@@ -977,7 +981,7 @@
 
     <div class="content-grid">
       <div class="narrative">
-        <p>Ask CoCo to clone the lab repo down via the provided url, then have it set up a <strong>virtual environment</strong> for the backend via the listed commands and install the <strong>frontend</strong> dependencies.</p>
+        <p>Ask CoCo to clone the lab repo down via the provided url, then use <strong>Open Folder</strong> to point Desktop at the cloned directory &mdash; CoCo works against an open workspace, and the rest of the lab assumes it's this one. From there, have it set up a <strong>virtual environment</strong> for the backend via the listed commands and install the <strong>frontend</strong> dependencies.</p>
         <p>Finally, ask CoCo to create your <strong>.env</strong> file. Give it the variable names the backend expects, seen to the right, along with your assigned values, and CoCo will write the file for you.</p>
       </div>
 
@@ -990,6 +994,7 @@
           <div class="cmd-section">
             <div class="cmd-section-label">Clone the repo</div>
             <div class="coco-check"><span class="prompt">$</span><span class="cmd">git clone https://github.com/evolvconsulting/coco_semantic_modeling_hol.git</span></div>
+            <div class="coco-check"><span class="prompt">&rarr;</span><span class="cmd">Open Folder</span><span class="req">point Desktop at the cloned directory</span></div>
           </div>
 
           <div class="cmd-section">
@@ -1027,7 +1032,7 @@
     </div>
   </div>
 
-  <div class="page" style="background-image: url('../assets/nyc8.jpg'); background-position: center 45%;">
+  <div class="page" style="background-image: url('assets/nyc8.jpg'); background-position: center 45%;">
     <div class="page-header">
       <div class="eyebrow">Step 04 &middot; Get Set Up</div>
       <h1>Launching the App</h1>
@@ -1083,7 +1088,7 @@
     </div>
   </div>
 
-  <div class="page page--bright" style="background-image: url('../assets/fin.jpg'); background-position: center 55%;">
+  <div class="page page--bright" style="background-image: url('assets/fin.jpg'); background-position: center 55%;">
     <div class="page-header">
       <div class="eyebrow">Step 05 &middot; The Lab Begins</div>
       <h1>Creating the Semantic View</h1>
@@ -1126,7 +1131,7 @@
     </div>
   </div>
 
-  <div class="page" style="background-image: url('../assets/nyc10.jpg'); background-position: center 50%;">
+  <div class="page" style="background-image: url('assets/nyc10.jpg'); background-position: center 50%;">
     <div class="page-header">
       <div class="eyebrow">Step 06 &middot; The Lab Begins</div>
       <h1>Reading the Column Comments</h1>
@@ -1168,7 +1173,7 @@
     </div>
   </div>
 
-  <div class="page" style="background-image: url('../assets/nyc11.jpg'); background-position: center 50%;">
+  <div class="page" style="background-image: url('assets/nyc11.jpg'); background-position: center 50%;">
     <div class="page-header">
       <div class="eyebrow">Step 07 &middot; The Lab Begins</div>
       <h1>Reading the Call Transcript</h1>
@@ -1210,7 +1215,7 @@
     </div>
   </div>
 
-  <div class="page page--top-shade-tall" style="background-image: url('../assets/nyc12.jpg'); background-position: center 50%;">
+  <div class="page page--top-shade-tall" style="background-image: url('assets/nyc12.jpg'); background-position: center 50%;">
     <div class="page-header">
       <div class="eyebrow">Step 08 &middot; The Lab Begins</div>
       <h1>Crafting and Running the SQL</h1>
@@ -1259,7 +1264,7 @@
     </div>
   </div>
 
-  <div class="page page--top-shade" style="background-image: url('../assets/nyc13.jpg'); background-position: center 50%;">
+  <div class="page page--top-shade" style="background-image: url('assets/nyc13.jpg'); background-position: center 50%;">
     <div class="page-header">
       <div class="eyebrow">Step 09 &middot; The Lab Begins</div>
       <h1>Creating the Agent</h1>
@@ -1310,7 +1315,7 @@
     </div>
   </div>
 
-  <div class="page page--top-shade-tall" style="background-image: url('../assets/nyc14.jpg'); background-position: center 50%;">
+  <div class="page page--top-shade-tall" style="background-image: url('assets/nyc14.jpg'); background-position: center 50%;">
     <div class="page-header">
       <div class="eyebrow">Step 10 &middot; The Lab Opens Up</div>
       <h1>Asking the Agent Questions</h1>
@@ -1325,8 +1330,8 @@
       <div class="path-diagram">
         <div class="path-stops">
           <div class="path-stop">
-            <div class="path-stop-label">Via the CLI</div>
-            <div class="path-stop-desc">Ask CoCo directly from the command line. Quick, though a little finicky with longer answers.</div>
+            <div class="path-stop-label">Via CoCo Desktop</div>
+            <div class="path-stop-desc">Ask CoCo directly in chat, right where you built it. Quickest loop of the three.</div>
           </div>
           <div class="path-stop">
             <div class="path-stop-label">Via Snowsight</div>
