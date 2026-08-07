@@ -21,8 +21,16 @@ FROM TABLE(RESULT_SCAN(LAST_QUERY_ID()));
 --    matches the region this account lives in.
 SHOW PARAMETERS LIKE 'CORTEX_ENABLED_CROSS_REGION' IN ACCOUNT;
 
--- 3. Cortex Analyst access is in place for the role the attendee will use.
-SHOW GRANTS TO ROLE SYSADMIN;
+-- 3. The participant role holds all three Cortex database roles. CoCo Desktop
+--    needs COPILOT_USER plus CORTEX_USER/CORTEX_AGENT_USER; missing any of these
+--    lets sign-in succeed but leaves the agent non-functional mid-lab.
+--    Expect exactly 3 rows.
+SHOW GRANTS TO ROLE HOL_PARTICIPANT;
+SELECT "granted_on", "name"
+FROM TABLE(RESULT_SCAN(LAST_QUERY_ID()))
+WHERE "granted_on" = 'DATABASE_ROLE'
+  AND "name" IN ('SNOWFLAKE.CORTEX_USER', 'SNOWFLAKE.CORTEX_AGENT_USER', 'SNOWFLAKE.COPILOT_USER')
+ORDER BY "name";
 
 -- 4. Git integration fetched the seed CSVs. Expect 5 files.
 SHOW GIT REPOSITORIES LIKE 'HOL_GIT_REPO' IN SCHEMA HOL_DEALER360.CORE;
@@ -60,8 +68,19 @@ FROM HOL_DEALER360.CORE.SERVICING_EVENTS s
 LEFT JOIN HOL_DEALER360.CORE.FUNDING_EVENTS f ON s.CONTRACT_ID = f.CONTRACT_ID
 WHERE f.CONTRACT_ID IS NULL;
 
--- 8. End-to-end smoke test as the role the attendee will actually use.
-USE ROLE SYSADMIN;
+-- 8. HOL_PARTICIPANT is bound to a user. This is the one check that fails until
+--    bind_participant.sql has run, which cannot happen until DataOps.live has
+--    provisioned the participant's user. Expect at least one row; zero rows means
+--    the participant can sign in but the lab will not work for them.
+SHOW GRANTS OF ROLE HOL_PARTICIPANT;
+SELECT "grantee_name" AS bound_to_user
+FROM TABLE(RESULT_SCAN(LAST_QUERY_ID()))
+WHERE "granted_to" = 'USER';
+
+-- 9. End-to-end smoke test as the role the participant will actually connect as.
+--    A facilitator holding ACCOUNTADMIN inherits HOL_PARTICIPANT, so this works
+--    before the user binding exists.
+USE ROLE HOL_PARTICIPANT;
 USE WAREHOUSE HOL_DEALER360_WH;
 
 SELECT d.TIER, COUNT(*) AS dealers, AVG(p.LOOK_TO_BOOK) AS avg_look_to_book

@@ -6,24 +6,45 @@ scripts in the parent `lab_setup/` directory remain the shared-account variant
 
 ## Run order
 
-Each attendee runs these in their own account, with `ACCOUNTADMIN`:
+An `ACCOUNTADMIN` runs these in each participant's account, ahead of the lab —
+never the participant, never live:
 
 | # | Script | When |
 |---|--------|------|
-| 1 | `hol_setup_dealer360.sql` | Before the lab. Creates the warehouse, database, tables, and loads seed data. |
-| 2 | `hol_verify_dealer360.sql` | Immediately after setup. Every check should pass before the lab starts. |
-| 3 | *(the lab itself)* | Attendee builds the semantic view with CoCo. |
-| 4 | `dealer_360_semantic_view.sql` | Reference / answer key. Not part of setup. |
-| 5 | `dealer_360_agent.sql` | After the semantic view exists. |
-| 6 | `hol_teardown_dealer360.sql` | After the lab, or to reset and re-run setup. |
+| 1 | `hol_setup_dealer360.sql` | Ahead of the lab. Creates the warehouse, `HOL_PARTICIPANT` role, database, tables, and loads seed data. |
+| 2 | `bind_participant.sql` | Once DataOps.live has provisioned the participant's user. **Required** — see below. |
+| 3 | `hol_verify_dealer360.sql` | After both. Every check should pass before the lab starts. |
+| 4 | *(the lab itself)* | Participant builds the semantic view with CoCo. |
+| 5 | `dealer_360_semantic_view.sql` | Reference / answer key. Not part of setup. |
+| 6 | `dealer_360_agent.sql` | After the semantic view exists. |
+| 7 | `hol_teardown_dealer360.sql` | After the lab, or to reset and re-run setup. |
+
+## The two-step user binding
+
+The participant's user is provisioned separately by **DataOps.live**, and its name
+isn't known when setup runs. So the two concerns are split:
+
+- `hol_setup_dealer360.sql` creates `HOL_PARTICIPANT` and grants it everything the
+  lab needs — warehouse, database, schema, tables, and all three Cortex database
+  roles. It binds the role to nobody.
+- `bind_participant.sql` takes the username, grants the role to that user, and sets
+  the user's default role, warehouse, and namespace. This is one edit and one run.
+
+Splitting it this way means setup doesn't block on DataOps.live, and the username
+appears in exactly one place. **Skipping step 2 is a silent failure**: the
+participant signs in fine, then has no warehouse, no database, and no Cortex
+access. Check 8 in the verify script is the guard — it returns zero rows until the
+binding exists.
 
 ## What this variant changes
 
-**No attendee users or roles.** The shared-account script provisions
-`HOL_USER_XX` / `HOL_ROLE_XX` with a shared password so N people can share one
-account. With one account per attendee that login already exists, so creating a
-second one adds a hardcoded-password account for no benefit. Objects here are
-owned by `SYSADMIN`, which any `ACCOUNTADMIN` inherits.
+**No user provisioning; one role instead of N.** The shared-account script
+creates `HOL_USER_XX` / `HOL_ROLE_XX` with a shared password so N people can
+share one account. Here the participant's user comes from DataOps.live, so this
+script creates no users at all — just a single `HOL_PARTICIPANT` role, bound to
+that user by `bind_participant.sql`. Objects are owned by `SYSADMIN`, and
+`HOL_PARTICIPANT` is granted to `SYSADMIN` so a facilitator with `ACCOUNTADMIN`
+inherits it and can dry-run the lab exactly as the participant will see it.
 
 **No `MASTER` database and no clones.** The shared script builds
 `HOL_DEALER360_MASTER` and zero-copy clones it to `_01`…`_NN`. Here
@@ -37,9 +58,12 @@ Edition or higher, so on a Standard attendee account that `CREATE WAREHOUSE`
 fails and every step after it fails with it. With one user per account there is
 no concurrency to scale for.
 
-**Explicit `SNOWFLAKE.CORTEX_USER` grant.** Granted to `PUBLIC` by default in
-most accounts, but granting it explicitly keeps a freshly provisioned account
-from failing at the Cortex Analyst step mid-lab.
+**All three Cortex database roles granted explicitly.** `CORTEX_USER` is granted
+to `PUBLIC` by default in most accounts, but a freshly provisioned account can't
+be assumed to have it, and CoCo Desktop additionally requires `COPILOT_USER`
+plus `CORTEX_AGENT_USER`. Missing any of them lets sign-in succeed while leaving
+the agent non-functional — a failure that surfaces mid-lab, not at setup. The
+shared-account script still grants none of these.
 
 ## Two things to confirm per account
 
@@ -60,22 +84,28 @@ the shared-account model (`Lab Account Name: AOVNGED.EVOLV_LAB`, shared password
 blocks become:
 
 ```
-Lab Account Name: <the attendee's own account identifier>
-User Name:        <the attendee's own login>
-Password:         <the attendee's own password>
+Lab Account Name: <the participant's own account identifier>
+User Name:        <the DataOps.live-provisioned username>
+Password:         <as issued with that user>
+Role:             HOL_PARTICIPANT
 Warehouse:        HOL_DEALER360_WH
 Database:         HOL_DEALER360
 Schema:           CORE
 ```
 
+If `bind_participant.sql` has run, role/warehouse/database are already the user's
+defaults, so the participant shouldn't need to set them by hand. List them anyway
+— CoCo Desktop's onboarding wizard doesn't ask for any of the three, and a
+participant who needs to correct them will look for them here.
+
 And the corresponding `backend/.env`:
 
 ```
-SNOWFLAKE_ACCOUNT=<the attendee's own account identifier>
-SNOWFLAKE_USER=<the attendee's own login>
-SNOWFLAKE_PASSWORD=<the attendee's own password>
+SNOWFLAKE_ACCOUNT=<the participant's own account identifier>
+SNOWFLAKE_USER=<the DataOps.live-provisioned username>
+SNOWFLAKE_PASSWORD=<as issued with that user>
 SNOWFLAKE_WAREHOUSE=HOL_DEALER360_WH
-SNOWFLAKE_ROLE=SYSADMIN
+SNOWFLAKE_ROLE=HOL_PARTICIPANT
 SNOWFLAKE_DATABASE=HOL_DEALER360
 SNOWFLAKE_SCHEMA=CORE
 ```

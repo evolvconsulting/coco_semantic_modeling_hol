@@ -4,12 +4,18 @@
 -- The attendee runs this once, in their own account, with ACCOUNTADMIN.
 --
 -- Differences from the shared-account script in lab_setup/:
---   - no HOL_USER_XX / HOL_ROLE_XX provisioning (the attendee already has a login)
+--   - no user provisioning loop; one HOL_PARTICIPANT role instead of HOL_ROLE_XX
 --   - no MASTER database + per-attendee clones (one database, no suffix)
 --   - single-cluster warehouse (no Enterprise Edition dependency)
 --
--- Objects created: HOL_DEALER360_WH, HOL_DEALER360.CORE (5 tables, seeded),
--- HOL_GIT_API_INTEGRATION, and a git repository + stage used to hydrate the seed data.
+-- The participant's user is provisioned separately by DataOps.live and its name
+-- is not known when this script runs. So this script creates and fully grants
+-- HOL_PARTICIPANT but does not bind it to anyone. Run bind_participant.sql once
+-- the username is known — that is a required step, not an optional one.
+--
+-- Objects created: HOL_DEALER360_WH, HOL_PARTICIPANT, HOL_DEALER360.CORE
+-- (5 tables, seeded), HOL_GIT_API_INTEGRATION, and a git repository + stage used
+-- to hydrate the seed data.
 
 USE ROLE ACCOUNTADMIN;
 
@@ -27,10 +33,27 @@ CREATE WAREHOUSE IF NOT EXISTS HOL_DEALER360_WH
 
 GRANT USAGE ON WAREHOUSE HOL_DEALER360_WH TO ROLE SYSADMIN;
 
--- Cortex Analyst / agent access. Granted to PUBLIC by default in most accounts,
--- but granting explicitly keeps a freshly provisioned account from failing at
--- the semantic-view step later in the lab.
-GRANT DATABASE ROLE SNOWFLAKE.CORTEX_USER TO ROLE SYSADMIN;
+-- The role the participant connects as. Everything the lab needs is granted to
+-- this role, so the DataOps.live-provisioned user only ever needs one grant
+-- (see bind_participant.sql) no matter what it ends up being called.
+CREATE ROLE IF NOT EXISTS HOL_PARTICIPANT
+    COMMENT = 'Dealer 360 HOL — role the lab participant connects as. Bound to the DataOps.live user by bind_participant.sql.';
+
+-- Keeps HOL_PARTICIPANT inside the standard hierarchy, so a facilitator holding
+-- ACCOUNTADMIN or SYSADMIN inherits it and can dry-run the lab as the
+-- participant would experience it.
+GRANT ROLE HOL_PARTICIPANT TO ROLE SYSADMIN;
+
+GRANT USAGE ON WAREHOUSE HOL_DEALER360_WH TO ROLE HOL_PARTICIPANT;
+
+-- Cortex access for the connecting role. CORTEX_USER covers Cortex Analyst and
+-- is granted to PUBLIC by default in most accounts, but granting it explicitly
+-- keeps a freshly provisioned account from failing at the semantic-view step.
+-- CoCo Desktop additionally requires COPILOT_USER, and CORTEX_AGENT_USER for
+-- the agent step.
+GRANT DATABASE ROLE SNOWFLAKE.CORTEX_USER TO ROLE HOL_PARTICIPANT;
+GRANT DATABASE ROLE SNOWFLAKE.CORTEX_AGENT_USER TO ROLE HOL_PARTICIPANT;
+GRANT DATABASE ROLE SNOWFLAKE.COPILOT_USER TO ROLE HOL_PARTICIPANT;
 
 CREATE OR REPLACE API INTEGRATION HOL_GIT_API_INTEGRATION
     API_PROVIDER = git_https_api
@@ -144,3 +167,15 @@ COPY INTO FUNDING_EVENTS
 COPY INTO SERVICING_EVENTS
     FROM @HOL_DEALER360.CORE.HOL_SEED_STAGE/servicing_events.csv
     FILE_FORMAT = (TYPE = CSV SKIP_HEADER = 1 FIELD_OPTIONALLY_ENCLOSED_BY = '"');
+
+-- Participant access to the lab data. ALL PRIVILEGES on the schema is what lets
+-- the participant CREATE the semantic view and the agent during the lab; the
+-- table grants let them read the seed data.
+--
+-- Deliberately not granted: HOL_SEED_STAGE and HOL_GIT_REPO. Both are setup
+-- plumbing — the data is already in tables by this point — and neither is
+-- touched by any lab step.
+GRANT ALL PRIVILEGES ON DATABASE HOL_DEALER360 TO ROLE HOL_PARTICIPANT;
+GRANT ALL PRIVILEGES ON SCHEMA HOL_DEALER360.CORE TO ROLE HOL_PARTICIPANT;
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA HOL_DEALER360.CORE TO ROLE HOL_PARTICIPANT;
+GRANT ALL PRIVILEGES ON FUTURE TABLES IN SCHEMA HOL_DEALER360.CORE TO ROLE HOL_PARTICIPANT;

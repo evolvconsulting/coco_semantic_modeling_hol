@@ -3,13 +3,16 @@
 -- Drops everything hol_setup_dealer360.sql created. Also the reset path: run
 -- this, then re-run the setup script for a clean lab environment.
 --
--- No users or roles are dropped here — this variant never creates any.
+-- Drops the HOL_PARTICIPANT role but NOT the participant's user — that user is
+-- provisioned and owned by DataOps.live, not by this lab.
 
 USE ROLE SYSADMIN;
 
 DROP DATABASE IF EXISTS HOL_DEALER360;
 
 USE ROLE ACCOUNTADMIN;
+
+DROP ROLE IF EXISTS HOL_PARTICIPANT;
 
 DROP API INTEGRATION IF EXISTS HOL_GIT_API_INTEGRATION;
 
