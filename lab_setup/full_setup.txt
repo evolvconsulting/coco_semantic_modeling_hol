@@ -18,7 +18,7 @@ User Name: HOL_USER_XX (based on number of users, will be between 01 and 0N)
     Example: If there are 25 lab attendees, the users names will be HOL_USER_01 - HOL_USER_25
 Password: Snowflake123! shared between all users
 Warehouse: HOL_DEALER360_WH
-Database: COCO_SDLC_HOL_DEALER_XX (based on number of users, same naming conventions as the users)
+Database: HOL_DEALER360_XX (based on number of users, same naming conventions as the users)
 Schema: CORE
 
 After CoCo is installed and configured to the lab account, we'll need to talk through a few steps to make sure

@@ -1,4 +1,4 @@
-CREATE OR REPLACE AGENT COCO_SDLC_HOL_DEALER_MASTER.CORE.DEALER_360_AGENT
+CREATE OR REPLACE AGENT HOL_DEALER360_MASTER.CORE.DEALER_360_AGENT
   COMMENT = 'Dealer 360 agent for natural-language Q&A over dealer applications, funding, servicing, and monthly dealer performance.'
   PROFILE = '{"display_name": "Dealer 360 Agent", "color": "blue"}'
   FROM SPECIFICATION
@@ -27,7 +27,7 @@ CREATE OR REPLACE AGENT COCO_SDLC_HOL_DEALER_MASTER.CORE.DEALER_360_AGENT
 
   tool_resources:
     "Dealer 360 Analyst":
-      semantic_view: "COCO_SDLC_HOL_DEALER_MASTER.CORE.DEALER_360_SEMANTIC_VIEW"
+      semantic_view: "HOL_DEALER360_MASTER.CORE.DEALER_360_SEMANTIC_VIEW"
       execution_environment:
         type: "warehouse"
         warehouse: "HOL_DEALER360_WH"
