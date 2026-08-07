@@ -20,6 +20,13 @@ GRANT ROLE HOL_PARTICIPANT TO USER IDENTIFIER($participant_user);
 -- onboarding wizard asks for account, username, and auth method, but never for
 -- role, warehouse, or database. Setting them here means the participant lands in
 -- a working session instead of having to fix it from the connection dropdown.
+--
+-- CAUTION: if DataOps.live manages this user through SOLE, SOLE is declarative
+-- and converges the user to its project config — a later SOLE run can silently
+-- revert these three defaults. Either confirm no SOLE run happens between this
+-- script and lab day, or ask DataOps.live to set the defaults in their config
+-- instead (which requires HOL_PARTICIPANT to exist before their run). The GRANT
+-- above is not at risk; only these defaults are.
 ALTER USER IDENTIFIER($participant_user) SET
     DEFAULT_ROLE = HOL_PARTICIPANT
     DEFAULT_WAREHOUSE = HOL_DEALER360_WH
