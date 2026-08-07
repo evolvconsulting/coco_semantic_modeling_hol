@@ -89,7 +89,8 @@ are enabled on whatever edition the attendee accounts are provisioned at.
 
 ## Attendee-facing docs
 
-`full_setup.txt` and `hands_on_lab.html` in the parent directory still describe
+`full_setup.txt` (in the parent directory) and `hands_on_lab.html` (at the repo
+root) still describe
 the shared-account model (`Lab Account Name: AOVNGED.EVOLV_LAB`, shared password
 `Snowflake123!`, `HOL_USER_XX`). For a single-account lab those credential
 blocks become:
