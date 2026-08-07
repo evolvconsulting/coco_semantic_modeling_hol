@@ -31,10 +31,18 @@ isn't known when setup runs. So the two concerns are split:
   the user's default role, warehouse, and namespace. This is one edit and one run.
 
 Splitting it this way means setup doesn't block on DataOps.live, and the username
-appears in exactly one place. **Skipping step 2 is a silent failure**: the
-participant signs in fine, then has no warehouse, no database, and no Cortex
-access. Check 8 in the verify script is the guard — it returns zero rows until the
-binding exists.
+appears in exactly one place. Check 8 in the verify script is the guard — it
+returns zero rows until the binding exists.
+
+**Skipping step 2 is recoverable but expensive.** The DataOps.live user carries
+`ACCOUNTADMIN` alongside its lower-privilege default role, and `ACCOUNTADMIN`
+inherits `HOL_PARTICIPANT` through `SYSADMIN` — so an unbound participant can
+elevate and still reach the data. That means running the whole lab as
+`ACCOUNTADMIN`, though, and it costs live troubleshooting time. Bind ahead of time.
+
+That same elevation is the general escape hatch for this variant: if anything in
+provisioning went wrong, the participant has the privileges to fix it in the room.
+It is a fallback, not the design — no lab step should require it.
 
 ## What this variant changes
 

@@ -70,8 +70,12 @@ WHERE f.CONTRACT_ID IS NULL;
 
 -- 8. HOL_PARTICIPANT is bound to a user. This is the one check that fails until
 --    bind_participant.sql has run, which cannot happen until DataOps.live has
---    provisioned the participant's user. Expect at least one row; zero rows means
---    the participant can sign in but the lab will not work for them.
+--    provisioned the participant's user. Expect at least one row.
+--
+--    Zero rows is not fatal — the DataOps.live user also holds ACCOUNTADMIN, which
+--    inherits HOL_PARTICIPANT via SYSADMIN, so the participant can elevate and
+--    still reach the data. But that has them running the lab as ACCOUNTADMIN and
+--    burns room time. Treat zero rows as "fix before the lab", not "ignore".
 SHOW GRANTS OF ROLE HOL_PARTICIPANT;
 SELECT "grantee_name" AS bound_to_user
 FROM TABLE(RESULT_SCAN(LAST_QUERY_ID()))
