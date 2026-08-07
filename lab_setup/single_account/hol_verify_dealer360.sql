@@ -68,11 +68,13 @@ FROM HOL_DEALER360.CORE.SERVICING_EVENTS s
 LEFT JOIN HOL_DEALER360.CORE.FUNDING_EVENTS f ON s.CONTRACT_ID = f.CONTRACT_ID
 WHERE f.CONTRACT_ID IS NULL;
 
--- 8. HOL_PARTICIPANT is bound to a user. This is the one check that fails until
---    bind_participant.sql has run, which cannot happen until DataOps.live has
---    provisioned the participant's user. Expect at least one row.
+-- 8. HOL_PARTICIPANT is bound to a user. Expect one row, granted to USER.
 --
---    Zero rows is not fatal — the DataOps.live user also holds ACCOUNTADMIN, which
+--    Zero rows means the bind block at the end of the setup script did not
+--    succeed — most likely the DataOps.live user did not exist yet, or is not
+--    named USER. Re-run setup once it exists; the script is idempotent.
+--
+--    Not fatal on its own: the DataOps.live user also holds ACCOUNTADMIN, which
 --    inherits HOL_PARTICIPANT via SYSADMIN, so the participant can elevate and
 --    still reach the data. But that has them running the lab as ACCOUNTADMIN and
 --    burns room time. Treat zero rows as "fix before the lab", not "ignore".

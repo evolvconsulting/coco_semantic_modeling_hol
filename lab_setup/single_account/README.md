@@ -11,34 +11,37 @@ never the participant, never live:
 
 | # | Script | When |
 |---|--------|------|
-| 1 | `hol_setup_dealer360.sql` | Ahead of the lab. Creates the warehouse, `HOL_PARTICIPANT` role, database, tables, and loads seed data. |
-| 2 | `bind_participant.sql` | Once DataOps.live has provisioned the participant's user. **Required** — see below. |
-| 3 | `hol_verify_dealer360.sql` | After both. Every check should pass before the lab starts. |
-| 4 | *(the lab itself)* | Participant builds the semantic view with CoCo. |
-| 5 | `dealer_360_semantic_view.sql` | Reference / answer key. Not part of setup. |
-| 6 | `dealer_360_agent.sql` | After the semantic view exists. |
-| 7 | `hol_teardown_dealer360.sql` | After the lab, or to reset and re-run setup. |
+| 1 | `hol_setup_dealer360.sql` | Ahead of the lab, **after** DataOps.live has provisioned the user. Creates everything and binds the participant. |
+| 2 | `hol_verify_dealer360.sql` | After setup. Every check should pass before the lab starts. |
+| 3 | *(the lab itself)* | Participant builds the semantic view with CoCo. |
+| 4 | `dealer_360_semantic_view.sql` | Reference / answer key. Not part of setup. |
+| 5 | `dealer_360_agent.sql` | After the semantic view exists. |
+| 6 | `hol_teardown_dealer360.sql` | After the lab, or to reset and re-run setup. |
 
-## The two-step user binding
+## The participant user
 
-The participant's user is provisioned separately by **DataOps.live**, and its name
-isn't known when setup runs. So the two concerns are split:
+The participant's user is provisioned separately by **DataOps.live** and is
+expected to be named `USER`. The last block of `hol_setup_dealer360.sql` grants
+`HOL_PARTICIPANT` to it and sets its default role, warehouse, and namespace.
 
-- `hol_setup_dealer360.sql` creates `HOL_PARTICIPANT` and grants it everything the
-  lab needs — warehouse, database, schema, tables, and all three Cortex database
-  roles. It binds the role to nobody.
-- `bind_participant.sql` takes the username, grants the role to that user, and sets
-  the user's default role, warehouse, and namespace. This is one edit and one run.
+`USER` is quoted as `"USER"` throughout because it is also a Snowflake keyword —
+`GRANT ROLE ... TO USER USER` does not parse. The quoting also makes it
+case-sensitive: it matches a user created as `USER` or `"USER"`, but not `"user"`.
 
-Splitting it this way means setup doesn't block on DataOps.live, and the username
-appears in exactly one place. Check 8 in the verify script is the guard — it
-returns zero rows until the binding exists.
+**Ordering matters now.** Setup should run after DataOps.live has created the
+user. If it runs first, the bind block reports a warning and everything else still
+applies — so the fix is simply to re-run setup once the user exists. The script is
+idempotent; a second run reloads the seed data to identical row counts.
 
-**Skipping step 2 is recoverable but expensive.** The DataOps.live user carries
-`ACCOUNTADMIN` alongside its lower-privilege default role, and `ACCOUNTADMIN`
-inherits `HOL_PARTICIPANT` through `SYSADMIN` — so an unbound participant can
-elevate and still reach the data. That means running the whole lab as
-`ACCOUNTADMIN`, though, and it costs live troubleshooting time. Bind ahead of time.
+If the username turns out to differ, change it in the three places in that final
+block. Check 8 in the verify script is the guard — it returns zero rows until the
+binding exists.
+
+**An unbound participant is recoverable but expensive.** The DataOps.live user
+carries `ACCOUNTADMIN` alongside its lower-privilege default role, and
+`ACCOUNTADMIN` inherits `HOL_PARTICIPANT` through `SYSADMIN` — so they can elevate
+and still reach the data. That means running the whole lab as `ACCOUNTADMIN`,
+though, and it costs live troubleshooting time.
 
 That same elevation is the general escape hatch for this variant: if anything in
 provisioning went wrong, the participant has the privileges to fix it in the room.
@@ -50,7 +53,7 @@ It is a fallback, not the design — no lab step should require it.
 creates `HOL_USER_XX` / `HOL_ROLE_XX` with a shared password so N people can
 share one account. Here the participant's user comes from DataOps.live, so this
 script creates no users at all — just a single `HOL_PARTICIPANT` role, bound to
-that user by `bind_participant.sql`. Objects are owned by `SYSADMIN`, and
+that user by the final block of setup. Objects are owned by `SYSADMIN`, and
 `HOL_PARTICIPANT` is granted to `SYSADMIN` so a facilitator with `ACCOUNTADMIN`
 inherits it and can dry-run the lab exactly as the participant will see it.
 
@@ -93,7 +96,7 @@ blocks become:
 
 ```
 Lab Account Name: <the participant's own account identifier>
-User Name:        <the DataOps.live-provisioned username>
+User Name:        USER  (provisioned by DataOps.live)
 Password:         <as issued with that user>
 Role:             HOL_PARTICIPANT
 Warehouse:        HOL_DEALER360_WH
@@ -101,7 +104,7 @@ Database:         HOL_DEALER360
 Schema:           CORE
 ```
 
-If `bind_participant.sql` has run, role/warehouse/database are already the user's
+If setup's bind block succeeded, role/warehouse/database are already the user's
 defaults, so the participant shouldn't need to set them by hand. List them anyway
 — CoCo Desktop's onboarding wizard doesn't ask for any of the three, and a
 participant who needs to correct them will look for them here.
@@ -110,7 +113,7 @@ And the corresponding `backend/.env`:
 
 ```
 SNOWFLAKE_ACCOUNT=<the participant's own account identifier>
-SNOWFLAKE_USER=<the DataOps.live-provisioned username>
+SNOWFLAKE_USER=USER
 SNOWFLAKE_PASSWORD=<as issued with that user>
 SNOWFLAKE_WAREHOUSE=HOL_DEALER360_WH
 SNOWFLAKE_ROLE=HOL_PARTICIPANT

@@ -8,10 +8,12 @@
 --   - no MASTER database + per-attendee clones (one database, no suffix)
 --   - single-cluster warehouse (no Enterprise Edition dependency)
 --
--- The participant's user is provisioned separately by DataOps.live and its name
--- is not known when this script runs. So this script creates and fully grants
--- HOL_PARTICIPANT but does not bind it to anyone. Run bind_participant.sql once
--- the username is known — that is a required step, not an optional one.
+-- The participant's user is provisioned separately by DataOps.live and is
+-- expected to be named USER. The final block binds HOL_PARTICIPANT to it and
+-- sets its session defaults. If that user does not exist yet, or is named
+-- something else, only that last block fails — everything before it still
+-- applies, and the block prints what to do next. Re-running the whole script
+-- once the user exists is safe.
 --
 -- Objects created: HOL_DEALER360_WH, HOL_PARTICIPANT, HOL_DEALER360.CORE
 -- (5 tables, seeded), HOL_GIT_API_INTEGRATION, and a git repository + stage used
@@ -34,10 +36,10 @@ CREATE WAREHOUSE IF NOT EXISTS HOL_DEALER360_WH
 GRANT USAGE ON WAREHOUSE HOL_DEALER360_WH TO ROLE SYSADMIN;
 
 -- The role the participant connects as. Everything the lab needs is granted to
--- this role, so the DataOps.live-provisioned user only ever needs one grant
--- (see bind_participant.sql) no matter what it ends up being called.
+-- this role, so the DataOps.live-provisioned user only ever needs the single
+-- grant at the bottom of this script.
 CREATE ROLE IF NOT EXISTS HOL_PARTICIPANT
-    COMMENT = 'Dealer 360 HOL — role the lab participant connects as. Bound to the DataOps.live user by bind_participant.sql.';
+    COMMENT = 'Dealer 360 HOL — role the lab participant connects as.';
 
 -- Keeps HOL_PARTICIPANT inside the standard hierarchy, so a facilitator holding
 -- ACCOUNTADMIN or SYSADMIN inherits it and can dry-run the lab as the
@@ -179,3 +181,51 @@ GRANT ALL PRIVILEGES ON DATABASE HOL_DEALER360 TO ROLE HOL_PARTICIPANT;
 GRANT ALL PRIVILEGES ON SCHEMA HOL_DEALER360.CORE TO ROLE HOL_PARTICIPANT;
 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA HOL_DEALER360.CORE TO ROLE HOL_PARTICIPANT;
 GRANT ALL PRIVILEGES ON FUTURE TABLES IN SCHEMA HOL_DEALER360.CORE TO ROLE HOL_PARTICIPANT;
+
+USE ROLE ACCOUNTADMIN;
+
+-- Bind the DataOps.live-provisioned user to HOL_PARTICIPANT.
+--
+-- USER is quoted throughout because it is both the username and a Snowflake
+-- keyword — GRANT ROLE ... TO USER USER does not parse. Double quotes also make
+-- the identifier case-sensitive, so this matches a user created as USER or
+-- "USER", but not one created as "user". If the name turns out to differ,
+-- change it in the three places below.
+--
+-- Wrapped so a missing user degrades to a warning instead of failing the script:
+-- everything above has already been applied by this point, and the only thing
+-- left is this binding. Without the handler, a facilitator sees a hard error at
+-- the end of an otherwise successful run and has to work out how much of it
+-- took effect.
+--
+-- Setting the defaults matters more under CoCo Desktop than it did under the
+-- CLI: the onboarding wizard asks for account, username, and auth method, but
+-- never for role, warehouse, or database. With these set, the participant lands
+-- in a working session instead of fixing it from the connection dropdown.
+--
+-- CAUTION: if DataOps.live manages this user through SOLE, SOLE is declarative
+-- and converges the user to its project config — a later SOLE run can silently
+-- revert these three defaults. Either confirm no SOLE run happens between this
+-- script and lab day, or ask DataOps.live to set the defaults in their config.
+-- The GRANT is not at risk; only the defaults are. If they are reverted, the
+-- participant can still pick the role, warehouse, and database from CoCo
+-- Desktop's connection dropdown.
+EXECUTE IMMEDIATE $$
+BEGIN
+    GRANT ROLE HOL_PARTICIPANT TO USER "USER";
+
+    ALTER USER "USER" SET
+        DEFAULT_ROLE = HOL_PARTICIPANT
+        DEFAULT_WAREHOUSE = HOL_DEALER360_WH
+        DEFAULT_NAMESPACE = HOL_DEALER360.CORE;
+
+    RETURN 'Bound HOL_PARTICIPANT to user "USER" and set its default role, warehouse, and namespace.';
+EXCEPTION
+    WHEN OTHER THEN
+        RETURN 'WARNING — everything else in this script succeeded, but the participant '
+            || 'user could not be bound: ' || SQLERRM
+            || ' || Confirm the DataOps.live username (SHOW USERS), correct it in the final '
+            || 'block of this script, and re-run. The lab will not work until this succeeds: '
+            || 'the participant would sign in with no role, warehouse, or database.';
+END;
+$$;
