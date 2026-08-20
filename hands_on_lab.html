@@ -143,6 +143,26 @@
     text-underline-offset: 0.22em;
   }
 
+  .register .creds {
+    margin-top: 1.15rem;
+    display: flex;
+    justify-content: center;
+    gap: 2.5rem;
+  }
+
+  .register .cred-label {
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    opacity: 0.75;
+    margin-right: 0.55rem;
+  }
+
+  .register .cred-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 500;
+    letter-spacing: 0;
+  }
+
   .page--top-shade::before {
     content: "";
     position: absolute;
@@ -919,8 +939,12 @@
       <div class="subtitle">evolv consulting in collaboration with Snowflake</div>
     </div>
     <div class="register">
-      <div class="register-label">Register your Snowflake lab account</div>
-      <a href="https://go.dataops.live/dfw-evolv-coco-hol/register">go.dataops.live/dfw-evolv-coco-hol/register</a>
+      <div class="register-label">Sign in to your Snowflake lab account</div>
+      <a href="http://sfsenorthamerica-adoyle_aws1.snowflakecomputing.com/console/login">sfsenorthamerica-adoyle_aws1.snowflakecomputing.com/console/login</a>
+      <div class="creds">
+        <div><span class="cred-label">Username</span><span class="cred-value">USER_xx</span></div>
+        <div><span class="cred-label">Password</span><span class="cred-value">Snowflake123!</span></div>
+      </div>
     </div>
   </div>
 
