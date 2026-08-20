@@ -958,9 +958,10 @@
     <div class="content-grid">
       <div class="narrative">
         <p>Download <strong>Snowflake CoCo Desktop</strong> from the downloads page and install it. On <strong>macOS</strong>, open the .dmg and drag CoCo into Applications. On <strong>Windows</strong>, run the .exe and take the <strong>user install</strong>. The app updates itself from here on out.</p>
-        <p>On first launch a <strong>four-step wizard</strong> runs: welcome, connect, view, theme. The connect step asks for only three things &mdash; <strong>account identifier</strong>, <strong>username</strong>, and an <strong>authentication method</strong>. Choose <strong>Password</strong>; enter the password issued with your account. Pick <strong>Agent</strong> view and whichever theme you like.</p>
-        <p>You have <strong>your own Snowflake account</strong> for this lab, so the account identifier is yours alone &mdash; take it from the credentials you were issued rather than the example shown here.</p>
-        <p>The wizard never asks for a role, warehouse, database, or schema, and it doesn't need to: all three are already set as defaults on your user. Connect and you're pointed at the lab data. They're listed here for the steps that name them, and for the <strong>.env</strong> file in step 03.</p>
+        <p>On first launch a <strong>four-step wizard</strong> runs: welcome, connect, view, theme. The connect step asks for only three things &mdash; <strong>account identifier</strong>, <strong>username</strong>, and an <strong>authentication method</strong>. Choose <strong>Password</strong> and enter the lab password (<strong>Snowflake123!</strong>). Pick <strong>Agent</strong> view and whichever theme you like.</p>
+        <p>Everyone shares <strong>one Snowflake account</strong> for this lab, so the account identifier is the same for all of you. What's yours alone is the <strong>number</strong> you were assigned: your username is <strong>USERxx</strong> and your schema carries the same name.</p>
+        <p>The wizard never asks for a role, warehouse, database, or schema, and it doesn't need to: all four are already set as defaults on your user. Connect and you're pointed at your own schema. They're listed here for the steps that name them, and for the <strong>.env</strong> file in step 03.</p>
+        <p>One database, <strong>HOL_DEALER360</strong>, holds the lab data for the whole room, and each of you has your own schema inside it named for your user &mdash; <strong>USERxx</strong>. Build everything you create today, semantic view and agent alike, in that schema.</p>
       </div>
 
       <div class="terminal">
@@ -981,14 +982,14 @@
           <div class="terminal-line"><span class="prompt">4</span><span class="cmd">Choose theme</span></div>
 
           <div class="cred-table">
-            <div class="cred-row"><div class="label">Account Identifier</div><div class="value">ORGNAME-ACCOUNT<small>your own &mdash; use the one you were issued</small></div></div>
-            <div class="cred-row"><div class="label">Username</div><div class="value">USER</div></div>
+            <div class="cred-row"><div class="label">Account Identifier</div><div class="value">SFSENORTHAMERICA-ADOYLE_AWS1<small>the same for everyone</small></div></div>
+            <div class="cred-row"><div class="label">Username</div><div class="value">USERxx<small>xx is your assigned number</small></div></div>
             <div class="cred-row"><div class="label">Auth Method</div><div class="value">Password</div></div>
-            <div class="cred-row"><div class="label">Password</div><div class="value">as issued<small>entered directly in CoCo</small></div></div>
-            <div class="cred-row"><div class="label">Role</div><div class="value">HOL_PARTICIPANT<small>already your default</small></div></div>
+            <div class="cred-row"><div class="label">Password</div><div class="value">Snowflake123!<small>entered directly in CoCo</small></div></div>
+            <div class="cred-row"><div class="label">Role</div><div class="value">HOL_ROLE_xx<small>already your default</small></div></div>
             <div class="cred-row"><div class="label">Warehouse</div><div class="value">HOL_DEALER360_WH<small>already your default</small></div></div>
             <div class="cred-row"><div class="label">Database</div><div class="value">HOL_DEALER360<small>already your default</small></div></div>
-            <div class="cred-row"><div class="label">Schema</div><div class="value">CORE<small>already your default</small></div></div>
+            <div class="cred-row"><div class="label">Schema</div><div class="value">USERxx<small>yours alone &mdash; already your default</small></div></div>
           </div>
         </div>
       </div>
@@ -1079,13 +1080,13 @@
             <div class="env-file">
               <div class="env-file-tab"><div class="dot"></div>backend/.env</div>
               <div class="env-file-body">
-                <div class="env-line"><span class="key">SNOWFLAKE_ACCOUNT</span><span class="eq">=</span><span class="val">ORGNAME-ACCOUNT</span></div>
-                <div class="env-line"><span class="key">SNOWFLAKE_USER</span><span class="eq">=</span><span class="val">USER</span></div>
-                <div class="env-line"><span class="key">SNOWFLAKE_PASSWORD</span><span class="eq">=</span><span class="val">as issued</span></div>
+                <div class="env-line"><span class="key">SNOWFLAKE_ACCOUNT</span><span class="eq">=</span><span class="val">SFSENORTHAMERICA-ADOYLE_AWS1</span></div>
+                <div class="env-line"><span class="key">SNOWFLAKE_USER</span><span class="eq">=</span><span class="val">USERxx</span></div>
+                <div class="env-line"><span class="key">SNOWFLAKE_PASSWORD</span><span class="eq">=</span><span class="val">Snowflake123!</span></div>
                 <div class="env-line"><span class="key">SNOWFLAKE_WAREHOUSE</span><span class="eq">=</span><span class="val">HOL_DEALER360_WH</span></div>
-                <div class="env-line"><span class="key">SNOWFLAKE_ROLE</span><span class="eq">=</span><span class="val">HOL_PARTICIPANT</span></div>
+                <div class="env-line"><span class="key">SNOWFLAKE_ROLE</span><span class="eq">=</span><span class="val">HOL_ROLE_xx</span></div>
                 <div class="env-line"><span class="key">SNOWFLAKE_DATABASE</span><span class="eq">=</span><span class="val">HOL_DEALER360</span></div>
-                <div class="env-line"><span class="key">SNOWFLAKE_SCHEMA</span><span class="eq">=</span><span class="val">CORE</span></div>
+                <div class="env-line"><span class="key">SNOWFLAKE_SCHEMA</span><span class="eq">=</span><span class="val">USERxx</span></div>
               </div>
             </div>
           </div>
@@ -1160,12 +1161,12 @@
     <div class="concept-layout">
       <div class="narrative">
         <p>The Dealer 360 Dashboard looks decent, but currently there's no semantic view or cortex agent to answer questions you may have about the data. So, what is a Semantic View anyways? A <strong>Snowflake Semantic View</strong> is a schema-level object where business concepts live directly in the database, giving physical data consistent business meaning. It's the ground truth a <strong>Cortex Agent</strong> relies on, and it needs to be nailed down before anything else.</p>
-        <p>The view itself sits within the database like any other schema based object, covering the tables and columns you choose and organizing them into certain layers that we define.</p>
+        <p>The view itself sits within your schema like any other schema based object, covering the tables and columns you choose and organizing them into certain layers that we define.</p>
       </div>
 
       <div class="db-diagram">
         <div class="db-shell">
-          <div class="db-shell-label">Your Database</div>
+          <div class="db-shell-label">HOL_DEALER360 &middot; USERxx</div>
           <div class="db-tables">
             <div class="db-table db-table--sv">SEMANTIC VIEW</div>
             <div class="db-table">DEALERS</div>
@@ -1287,7 +1288,7 @@
     <div class="content-grid">
       <div class="narrative">
         <p>With the column comments and the call transcript both gathered, it's time to build the view itself. Ask CoCo to use everything saved in <strong>semantic_view_context.txt</strong> to write the <strong>CREATE SEMANTIC VIEW</strong> statement, covering the five sections: Tables, Relationships, Facts, Dimensions, and Metrics.</p>
-        <p>There's more than one way to build a semantic view, but we're deliberately going the <strong>SQL route</strong> here. Writing the DDL by hand keeps every decision explicit and reviewable before anything is created. Once CoCo has drafted the statement, ask it to run the SQL so the view takes its place as a schema-level object <strong>within your database</strong>, right alongside the tables it points to.</p>
+        <p>There's more than one way to build a semantic view, but we're deliberately going the <strong>SQL route</strong> here. Writing the DDL by hand keeps every decision explicit and reviewable before anything is created. Once CoCo has drafted the statement, ask it to run the SQL so the view takes its place as a schema-level object <strong>within your USERxx schema</strong>, right alongside the tables it points to.</p>
       </div>
 
       <div class="terminal">
